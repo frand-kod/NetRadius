@@ -1,0 +1,30 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Customer;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<Customer>
+ */
+class CustomerFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'username' => fake()->unique()->userName(),
+            'password' => 'password',
+            'fullname' => fake()->name(),
+            'phonenumber' => fake()->phoneNumber(),
+            'email' => fake()->unique()->safeEmail(),
+            'service_type' => 'Hotspot',
+            'status' => 'Active',
+        ];
+    }
+}
