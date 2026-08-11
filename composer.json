@@ -11,8 +11,7 @@
         "laravel/framework": "^13.8",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
-        "pear2/net_routeros": "1.0.0b6",
-        "tightenco/ziggy": "^2.6"
+        "pear2/net_routeros": "1.0.0b6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

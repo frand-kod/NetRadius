@@ -6,7 +6,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title inertia>{{ config('app.name', 'PHPNuxBill') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @routes
     @inertiaHead
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">
