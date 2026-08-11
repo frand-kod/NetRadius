@@ -56,6 +56,10 @@ class VoucherController extends Controller
             'generated_by' => ['nullable', 'integer'],
         ]);
 
+        // `user` is NOT NULL in the DB — default empty string (ConvertEmptyStringsToNull
+        // would otherwise turn a blank input into null and violate the constraint).
+        $data['user'] = $data['user'] ?? '';
+
         Voucher::create($data);
 
         return redirect()->route('admin.vouchers.index')->with('success', 'Voucher berhasil dibuat.');

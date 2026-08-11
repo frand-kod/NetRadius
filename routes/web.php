@@ -79,8 +79,8 @@ Route::middleware('auth:web')->prefix('admin/orders')->name('admin.orders.')->gr
     Route::get('/', [AdminOrderController::class, 'index'])->name('index');
     Route::get('/create', [AdminOrderController::class, 'create'])->name('create');
     Route::post('/', [AdminOrderController::class, 'store'])->name('store');
-    Route::post('/{order}/mark-as-paid', [AdminOrderController::class, 'markAsPaid'])->name('mark-as-paid');
-    Route::post('/{order}/cancel', [AdminOrderController::class, 'cancel'])->name('cancel');
+    Route::post('/{order:id}/mark-as-paid', [AdminOrderController::class, 'markAsPaid'])->name('mark-as-paid');
+    Route::post('/{order:id}/cancel', [AdminOrderController::class, 'cancel'])->name('cancel');
 });
 
 Route::middleware('auth:web')->prefix('admin/plans')->name('admin.plans.')->group(function () {
