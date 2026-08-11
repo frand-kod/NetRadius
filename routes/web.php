@@ -1,11 +1,17 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\ForgotPasswordController as AdminForgotPasswordController;
 use App\Http\Controllers\Admin\BandwidthController as AdminBandwidthController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ForgotPasswordController as AdminForgotPasswordController;
+use App\Http\Controllers\Admin\IncomeReportController as AdminIncomeReportController;
+use App\Http\Controllers\Admin\NotificationSettingsController as AdminNotificationSettingsController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PaymentSettingsController as AdminPaymentSettingsController;
+use App\Http\Controllers\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Admin\RouterController as AdminRouterController;
+use App\Http\Controllers\Admin\VoucherController as AdminVoucherController;
 use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\ForgotPasswordController as CustomerForgotPasswordController;
@@ -44,6 +50,46 @@ Route::middleware('auth:web')->prefix('admin/customers')->name('admin.customers.
     Route::get('/{customer}/edit', [AdminCustomerController::class, 'edit'])->name('edit');
     Route::put('/{customer}', [AdminCustomerController::class, 'update'])->name('update');
     Route::delete('/{customer}', [AdminCustomerController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware('auth:web')->get('/admin/income-report', [AdminIncomeReportController::class, 'show'])
+    ->name('admin.income-report');
+
+Route::middleware('auth:web')->prefix('admin/settings/payment')->name('admin.settings.payment.')->group(function () {
+    Route::get('/', [AdminPaymentSettingsController::class, 'edit'])->name('edit');
+    Route::post('/', [AdminPaymentSettingsController::class, 'update'])->name('update');
+});
+
+Route::middleware('auth:web')->prefix('admin/settings/notification')->name('admin.settings.notification.')->group(function () {
+    Route::get('/', [AdminNotificationSettingsController::class, 'edit'])->name('edit');
+    Route::post('/', [AdminNotificationSettingsController::class, 'update'])->name('update');
+});
+
+Route::middleware('auth:web')->prefix('admin/vouchers')->name('admin.vouchers.')->group(function () {
+    Route::get('/', [AdminVoucherController::class, 'index'])->name('index');
+    Route::get('/create', [AdminVoucherController::class, 'create'])->name('create');
+    Route::post('/', [AdminVoucherController::class, 'store'])->name('store');
+    Route::get('/{voucher}/edit', [AdminVoucherController::class, 'edit'])->name('edit');
+    Route::put('/{voucher}', [AdminVoucherController::class, 'update'])->name('update');
+    Route::delete('/{voucher}', [AdminVoucherController::class, 'destroy'])->name('destroy');
+    Route::post('/generate', [AdminVoucherController::class, 'generate'])->name('generate');
+});
+
+Route::middleware('auth:web')->prefix('admin/orders')->name('admin.orders.')->group(function () {
+    Route::get('/', [AdminOrderController::class, 'index'])->name('index');
+    Route::get('/create', [AdminOrderController::class, 'create'])->name('create');
+    Route::post('/', [AdminOrderController::class, 'store'])->name('store');
+    Route::post('/{order}/mark-as-paid', [AdminOrderController::class, 'markAsPaid'])->name('mark-as-paid');
+    Route::post('/{order}/cancel', [AdminOrderController::class, 'cancel'])->name('cancel');
+});
+
+Route::middleware('auth:web')->prefix('admin/plans')->name('admin.plans.')->group(function () {
+    Route::get('/', [AdminPlanController::class, 'index'])->name('index');
+    Route::get('/create', [AdminPlanController::class, 'create'])->name('create');
+    Route::post('/', [AdminPlanController::class, 'store'])->name('store');
+    Route::get('/{plan}/edit', [AdminPlanController::class, 'edit'])->name('edit');
+    Route::put('/{plan}', [AdminPlanController::class, 'update'])->name('update');
+    Route::delete('/{plan}', [AdminPlanController::class, 'destroy'])->name('destroy');
 });
 
 Route::middleware('auth:web')->prefix('admin/bandwidths')->name('admin.bandwidths.')->group(function () {
