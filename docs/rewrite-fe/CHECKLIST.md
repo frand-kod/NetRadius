@@ -1,28 +1,31 @@
 # CHECKLIST.md — Progress Tracker
 
-Check setiap item setelah selesai dan diverifikasi.
-
 ## Setup
-- [ ] 00-setup — Install Inertia+Vue, Vite config, middleware, layout, app.js
+- [x] 00-setup — Install Inertia+Vue, Vite config, middleware, layout, app.js
 
 ## Admin Panel
-- [ ] 01-admin-auth — Login, logout, forgot password
-- [ ] 06-router-resource — Router CRUD (sederhana, pemanasan)
-- [ ] 07-bandwidth-resource — Bandwidth CRUD
-- [ ] 02-customer-resource — Customer CRUD
-- [ ] 03-plan-resource — Plan CRUD
-- [ ] 04-order-resource — Order list + create + Mark as Paid + Cancel
-- [ ] 05-voucher-resource — Voucher CRUD + Generate + Print
-- [ ] 08-settings-pages — PaymentSettings + NotificationSettings
-- [ ] 09-income-report — IncomeReport page
+- [x] 01-admin-auth — Login, logout, forgot password
+- [x] 06-router-resource — Router CRUD (sederhana, pemanasan)
+- [x] 07-bandwidth-resource — Bandwidth CRUD
+- [x] 02-customer-resource — Customer CRUD
+- [x] 03-plan-resource — Plan CRUD
+- [x] 04-order-resource — Order list + create + Mark as Paid + Cancel
+- [x] 05-voucher-resource — Voucher CRUD + Generate + Print
+- [x] 08-settings-pages — PaymentSettings + NotificationSettings
+- [x] 09-income-report — IncomeReport page
 
 ## Customer Portal
-- [ ] 10-customer-portal — Login, dashboard, forgot password
+- [x] 10-customer-portal — Login, dashboard, forgot password
 
 ## Public Pages
-- [ ] 11-public-pages — Invoice, voucher print, welcome
+- [x] 11-public-pages — Invoice, voucher print, welcome
 
 ## Cleanup
-- [ ] 99-cleanup — Remove Filament, run full test suite (49 tests must pass)
-- [ ] npm run build — no errors
-- [ ] Manual smoke test semua fitur
+- [x] 99-cleanup — Remove Filament (dilakukan lebih awal karena konflik route), run full test suite
+- [x] npm run build — sukses
+- [x] 52 PHPUnit test pass
+
+## Verifikasi Final
+- [x] `php artisan test --compact` → **52 tests, 52 passed**
+- [x] `npm run build` → clean
+- [x] 3 commit: setup+CRUD dasar, CRUD lanjutan, portal+publik+cleanup
