@@ -6,15 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Services\PasswordResetOtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ForgotPasswordController extends Controller
 {
     public function __construct(private readonly PasswordResetOtpService $otp) {}
 
-    public function show(): View
+    public function show(): Response
     {
-        return view('customer.forgot-password');
+        return Inertia::render('Customer/ForgotPassword');
     }
 
     public function requestCode(Request $request): RedirectResponse

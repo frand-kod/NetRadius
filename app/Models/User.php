@@ -4,9 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasName;
-use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 #[Fillable(['username', 'fullname', 'password', 'phone', 'email', 'city', 'subdistrict', 'ward', 'user_type', 'status'])]
 #[Hidden(['password', 'remember_token', 'login_token'])]
-class User extends Authenticatable implements FilamentUser, HasName
+class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -38,15 +35,5 @@ class User extends Authenticatable implements FilamentUser, HasName
             'last_login' => 'datetime',
             'creationdate' => 'datetime',
         ];
-    }
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return $this->status === 'Active';
-    }
-
-    public function getFilamentName(): string
-    {
-        return $this->fullname;
     }
 }

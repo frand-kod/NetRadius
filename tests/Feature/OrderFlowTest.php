@@ -13,6 +13,7 @@ use App\Services\OrderService;
 use App\Services\RechargeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class OrderFlowTest extends TestCase
@@ -78,8 +79,9 @@ class OrderFlowTest extends TestCase
         $response = $this->get(route('invoice.show', $order->invoice_token));
 
         $response->assertOk();
-        $response->assertSee('Budi Santoso');
-        $response->assertSee($plan->name_plan);
+        $response->assertInertia(fn (Assert $page) => $page->component('Public/Invoice')
+            ->where('order.customer.fullname', 'Budi Santoso')
+            ->where('order.plan.name_plan', $plan->name_plan));
     }
 
     public function test_marking_order_as_paid_recharges_customer_and_updates_status(): void

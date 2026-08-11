@@ -29,7 +29,7 @@ class VoucherGenerationTest extends TestCase
     {
         $response = $this->get('/admin/vouchers/print?ids=1,2');
 
-        $response->assertRedirect(route('filament.admin.auth.login'));
+        $response->assertRedirect(route('admin.login'));
     }
 
     public function test_print_route_shows_generated_voucher_codes(): void

@@ -7,13 +7,14 @@ use App\Models\Customer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class AuthController extends Controller
 {
-    public function showLogin(): View
+    public function showLogin(): Response
     {
-        return view('customer.login');
+        return Inertia::render('Customer/Login');
     }
 
     public function login(Request $request): RedirectResponse

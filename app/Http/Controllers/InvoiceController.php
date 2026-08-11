@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\AppConfig;
 use App\Models\Order;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class InvoiceController extends Controller
 {
-    public function show(Order $order): View
+    public function show(Order $order): Response
     {
-        return view('invoice.show', [
+        return Inertia::render('Public/Invoice', [
             'order' => $order->load('customer', 'plan'),
             'qrPath' => AppConfig::get('payment_qr_path'),
         ]);

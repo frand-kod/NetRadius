@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Customer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class CustomerAuthTest extends TestCase
@@ -58,7 +59,8 @@ class CustomerAuthTest extends TestCase
         $response = $this->actingAs($customer, 'customer')->get('/customer/dashboard');
 
         $response->assertOk();
-        $response->assertSee($customer->fullname);
+        $response->assertInertia(fn (Assert $page) => $page->component('Customer/Dashboard')
+            ->where('customer.fullname', $customer->fullname));
     }
 
     public function test_guest_is_redirected_from_dashboard_to_login(): void
