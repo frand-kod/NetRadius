@@ -35,7 +35,7 @@ function submit() {
         </form>
 
         <p class="mt-4 text-center text-sm">
-            <a :href="route('admin.forgot-password.show')" class="text-amber-600 hover:underline">
+            <a href="/admin-forgot-password" class="text-amber-600 hover:underline">
                 Lupa password?
             </a>
         </p>
