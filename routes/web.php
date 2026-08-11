@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ForgotPasswordController as AdminForgotPasswordController;
 use App\Http\Controllers\Admin\IncomeReportController as AdminIncomeReportController;
+use App\Http\Controllers\Admin\LogController as AdminLogController;
 use App\Http\Controllers\Admin\NotificationSettingsController as AdminNotificationSettingsController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PaymentSettingsController as AdminPaymentSettingsController;
@@ -54,6 +55,9 @@ Route::middleware('auth:web')->prefix('admin/customers')->name('admin.customers.
 
 Route::middleware('auth:web')->get('/admin/income-report', [AdminIncomeReportController::class, 'show'])
     ->name('admin.income-report');
+
+Route::middleware('auth:web')->get('/admin/logs', [AdminLogController::class, 'index'])
+    ->name('admin.logs');
 
 Route::middleware('auth:web')->prefix('admin/settings/payment')->name('admin.settings.payment.')->group(function () {
     Route::get('/', [AdminPaymentSettingsController::class, 'edit'])->name('edit');

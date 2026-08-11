@@ -50,6 +50,10 @@ const page = usePage();
                       :class="{ 'bg-gray-700': page.url.startsWith('/admin/income-report') }">
                     Income Report
                 </Link>
+                <Link href="/admin/logs" class="block px-3 py-2 rounded hover:bg-gray-700"
+                      :class="{ 'bg-gray-700': page.url.startsWith('/admin/logs') }">
+                    Logs
+                </Link>
             </nav>
         </aside>
 
