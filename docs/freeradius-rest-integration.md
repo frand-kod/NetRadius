@@ -6,6 +6,24 @@ With Freeradius REST, it will use current PHPNuxBill Core, and you don't need IP
 
 For now is only support PAP Autentication, i am still working with CHAP
 
+> **⚠️ Endpoint security (required):** The app's `/api/radius` endpoint is protected by a
+> shared secret. You MUST:
+> 1. Set a long random value for `RADIUS_API_SECRET` in the Laravel app's `.env`.
+> 2. Append `secret=YOUR_RADIUS_API_SECRET` to the `data` payload of **every** `rest`
+>    section below, using the exact same value as `RADIUS_API_SECRET`.
+>
+> Without a matching secret every request is rejected with HTTP 401 (fail-closed).
+
+> **🔐 Hardening (recommended):**
+> - **Verify the app's TLS certificate.** In `mods-enabled/rest`, set `check_cert = yes`
+>   and point `ca_file` to your CA bundle. If the app uses an intermediate CA, point
+>   `ca_file` to the **issuing (intermediate)** CA to avoid `CURLE_SSL_ISSUER_ERROR`.
+> - **Use a strong, unique secret** for every `client { }` in `clients.conf` (it is a
+>   pre-shared key) and a long random `RADIUS_API_SECRET` on the app side.
+> - **Firewall**: only allow the FreeRADIUS server's IP to reach the app's `/api/radius`.
+> - **Disable debug in production**: set `APP_DEBUG=false` in the Laravel `.env` so
+>   errors never leak stack traces to the public.
+
 Installing freeradius
 apt-get -y install freeradius freeradius-rest
 edit clients.conf
@@ -41,7 +59,7 @@ rest {
 		uri = "${..connect_uri}?action=authenticate"
         method = 'post'
         body = 'post'
-        data = "username=%{urlquote:%{User-Name}}&password=%{urlquote:%{User-Password}}&nasid=%{urlquote:%{NAS-Identifier}}&CHAPchallenge=%{urlquote:%{CHAP-Challenge}}&CHAPassword=%{urlquote:%{CHAP-Password}}&realm=%{urlquote:%{Mikrotik-Realm}}&macAddr=%{urlquote:%{Calling-Station-Id}}&nasip=%{urlquote:%{NAS-IP-Address}}"
+        data = "username=%{urlquote:%{User-Name}}&password=%{urlquote:%{User-Password}}&nasid=%{urlquote:%{NAS-Identifier}}&CHAPchallenge=%{urlquote:%{CHAP-Challenge}}&CHAPassword=%{urlquote:%{CHAP-Password}}&realm=%{urlquote:%{Mikrotik-Realm}}&macAddr=%{urlquote:%{Calling-Station-Id}}&nasip=%{urlquote:%{NAS-IP-Address}}&secret=YOUR_RADIUS_API_SECRET"
 	    tls = ${..tls}
 	}
 
@@ -49,7 +67,7 @@ rest {
             uri = "${..connect_uri}?action=authorize"
             method = 'post'
             body = 'post'
-            data = "username=%{urlquote:%{User-Name}}&password=%{urlquote:%{User-Password}}&nasid=%{urlquote:%{NAS-Identifier}}&CHAPchallenge=%{urlquote:%{CHAP-Challenge}}&CHAPassword=%{urlquote:%{CHAP-Password}}&realm=%{urlquote:%{Mikrotik-Realm}}&macAddr=%{urlquote:%{Calling-Station-Id}}&nasip=%{urlquote:%{NAS-IP-Address}}"
+            data = "username=%{urlquote:%{User-Name}}&password=%{urlquote:%{User-Password}}&nasid=%{urlquote:%{NAS-Identifier}}&CHAPchallenge=%{urlquote:%{CHAP-Challenge}}&CHAPassword=%{urlquote:%{CHAP-Password}}&realm=%{urlquote:%{Mikrotik-Realm}}&macAddr=%{urlquote:%{Calling-Station-Id}}&nasip=%{urlquote:%{NAS-IP-Address}}&secret=YOUR_RADIUS_API_SECRET"
 	    tls = ${..tls}
     }
 
@@ -64,7 +82,7 @@ rest {
 &acctInputPackets=%{urlquote:%{Acct-Input-Packets}}&acctOutputPackets=%{urlquote:%{Acct-Output-Packets}}\
 &nasPortId=%{urlquote:%{NAS-Port-Id}}&framedIPAddress=%{urlquote:%{Framed-IP-Address}}\
 &sessionTimeout=%{urlquote:%{Session-Timeout}}&framedIPNetmask=%{urlquote:%{Framed-IP-Netmask}}\
-&acctStatusType=%{urlquote:%{Acct-Status-Type}}&nasPortType=%{urlquote:%{NAS-Port-Type}}"
+&acctStatusType=%{urlquote:%{Acct-Status-Type}}&nasPortType=%{urlquote:%{NAS-Port-Type}}&secret=YOUR_RADIUS_API_SECRET"
 		tls = ${..tls}
 	}
 
@@ -72,7 +90,7 @@ rest {
         uri = "${..connect_uri}?action=post-auth"
         method = 'post'
         body = 'post'
-        data = "username=%{urlquote:%{User-Name}}"
+        data = "username=%{urlquote:%{User-Name}}&secret=YOUR_RADIUS_API_SECRET"
 		tls = ${..tls}
     }
 

@@ -51,13 +51,8 @@ class RadiusAuthController extends Controller
             ? Voucher::query()->where('code', $identity->username)->exists()
             : Customer::query()
                 ->where('status', 'Active')
-                ->where(function ($query) use ($identity) {
-                    $query->where(function ($q) use ($identity) {
-                        $q->where('username', $identity->username)->where('password', $identity->password);
-                    })->orWhere(function ($q) use ($identity) {
-                        $q->where('pppoe_username', $identity->username)->where('pppoe_password', $identity->password);
-                    });
-                })
+                ->where('username', $identity->username)
+                ->where('password', $identity->password)
                 ->exists();
 
         if (! $found) {
@@ -73,26 +68,14 @@ class RadiusAuthController extends Controller
 
         $recharge = UserRecharge::query()->where('username', $identity->username)->first();
 
-        if (! $recharge) {
-            $pppoeCustomer = Customer::query()->where('pppoe_username', $identity->username)->first();
-            if ($pppoeCustomer) {
-                $identity->username = $pppoeCustomer->username;
-                $recharge = UserRecharge::query()->where('username', $identity->username)->first();
-            }
-        }
-
         if ($recharge) {
             if (! $identity->isVoucher && ! $identity->isChap) {
                 $customer = Customer::query()
                     ->where('status', 'Active')
-                    ->where(function ($query) use ($identity) {
-                        $query->where('username', $identity->username)
-                            ->orWhere('pppoe_username', $identity->username);
-                    })
+                    ->where('username', $identity->username)
                     ->first();
 
-                $matches = $customer
-                    && ($customer->password === $identity->password || $customer->pppoe_password === $identity->password);
+                $matches = $customer && $customer->password === $identity->password;
 
                 if (! $matches) {
                     throw new RadiusRejectedException('Username or Password is wrong');
@@ -110,7 +93,6 @@ class RadiusAuthController extends Controller
 
         $voucher = Voucher::query()
             ->where('code', $identity->username)
-            ->where('routers', 'radius')
             ->first();
 
         if (! $voucher) {
@@ -122,11 +104,29 @@ class RadiusAuthController extends Controller
         }
 
         $plan = Plan::findOrFail($voucher->id_plan);
-        $this->rechargeService->recharge(null, $plan, 'radius', 'Voucher', $identity->username);
 
-        $voucher->status = '1';
-        $voucher->used_date = now();
-        $voucher->save();
+        // Atomically claim the voucher (status 0 -> 1) so two concurrent
+        // requests cannot both activate it. If the recharge then fails, revert
+        // the claim so the voucher stays usable.
+        $claimed = Voucher::query()
+            ->where('id', $voucher->id)
+            ->where('status', '0')
+            ->update(['status' => '1', 'used_date' => now()]);
+
+        if ($claimed !== 1) {
+            throw new RadiusRejectedException('Voucher Expired...');
+        }
+
+        try {
+            $this->rechargeService->recharge(null, $plan, 'Voucher', $identity->username);
+        } catch (Throwable $e) {
+            Voucher::query()
+                ->where('id', $voucher->id)
+                ->where('status', '1')
+                ->update(['status' => '0', 'used_date' => null]);
+
+            throw $e;
+        }
 
         $recharge = UserRecharge::query()->where('username', $identity->username)->first();
         if (! $recharge) {
@@ -151,14 +151,18 @@ class RadiusAuthController extends Controller
             ->where('nasid', $request->input('nasid'))
             ->first();
 
-        $outputOctets = (int) $request->input('acctOutputOctets', 0);
-        $inputOctets = (int) $request->input('acctInputOctets', 0);
+        // Clamp accounting counters to non-negative integers so a malformed or
+        // malicious NAS/attacker cannot submit negative octets/session time to
+        // drain or inflate a customer's usage (and bypass data limits).
+        $outputOctets = max(0, $request->integer('acctOutputOctets', 0));
+        $inputOctets = max(0, $request->integer('acctInputOctets', 0));
+        $sessionTime = max(0, $request->integer('acctSessionTime', 0));
 
         $data = [
             'username' => $username,
             'realm' => $request->input('realm'),
             'nasipaddress' => $request->input('nasIpAddress'),
-            'acctsessiontime' => (int) $request->input('acctSessionTime', 0),
+            'acctsessiontime' => $sessionTime,
             'nasid' => $request->input('nasid'),
             'nasportid' => $request->input('nasPortId'),
             'nasporttype' => $request->input('nasPortType'),
@@ -177,15 +181,7 @@ class RadiusAuthController extends Controller
         $recharge = UserRecharge::query()
             ->where('username', $username)
             ->where('status', 'on')
-            ->where('routers', 'radius')
             ->first();
-
-        if (! $recharge) {
-            $pppoeCustomer = Customer::query()->where('pppoe_username', $username)->first();
-            if ($pppoeCustomer) {
-                $recharge = UserRecharge::query()->where('username', $pppoeCustomer->username)->first();
-            }
-        }
 
         if ($recharge) {
             if ($row) {

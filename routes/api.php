@@ -8,4 +8,5 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/radius', [RadiusAuthController::class, 'handle']);
+Route::post('/radius', [RadiusAuthController::class, 'handle'])
+    ->middleware(['radius.secret', 'throttle:radius']);

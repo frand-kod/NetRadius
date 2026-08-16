@@ -5,11 +5,14 @@ namespace App\Services\Radius;
 class ChapAuthenticator
 {
     /**
-     * Literal port of the legacy `Password::chap_verify()`.
+     * Port of the legacy `Password::chap_verify()` with the inverted
+     * comparison corrected.
      *
-     * NOTE: this preserves the original comparison exactly as it runs in
-     * production (`../system/autoload/Password.php`), even though the
-     * `!=` reads unusually for a "verify" method — do not "fix" it here.
+     * NOTE: the original legacy code returned `$response != $chapPassword`
+     * (a negated comparison that made `verify()` true whenever the supplied
+     * CHAP password did NOT match) — an authentication bypass. That bug is
+     * fixed here by comparing for equality, per RFC 2865: the client's CHAP
+     * response is valid only when it equals the recomputed hash.
      */
     public static function verify(string $realPassword, string $chapPassword, string $chapChallenge): bool
     {
@@ -18,6 +21,6 @@ class ChapAuthenticator
         $result = hex2bin($chapId).$realPassword.hex2bin(substr($chapChallenge, 2));
         $response = $chapId.md5($result);
 
-        return $response != $chapPassword;
+        return $response === $chapPassword;
     }
 }
