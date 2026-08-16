@@ -1,7 +1,7 @@
 # Fitur NetRadius
 
 ## Tentang NetRadius
-NetRadius adalah solusi billing hotspot Mikrotik yang ditulis ulang ke Laravel 13, dirancang khusus untuk penggunaan pribadi (ISP rumahan/perumahan kecil, single admin).
+NetRadius adalah solusi billing hotspot Mikrotik, dirancang khusus untuk penggunaan pribadi
 
 ## Target Audiens
 - Pemilik ISP rumahan atau perumahan kecil.
