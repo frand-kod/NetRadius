@@ -77,6 +77,8 @@ Route::middleware('auth:web')->prefix('admin/settings/payment')->name('admin.set
 Route::middleware('auth:web')->prefix('admin/settings/notification')->name('admin.settings.notification.')->group(function () {
     Route::get('/', [AdminNotificationSettingsController::class, 'edit'])->name('edit');
     Route::post('/', [AdminNotificationSettingsController::class, 'update'])->name('update');
+    Route::post('/test', [AdminNotificationSettingsController::class, 'test'])->name('test');
+    Route::get('/status', [AdminNotificationSettingsController::class, 'status'])->name('status');
 });
 
 Route::middleware('auth:web')->prefix('admin/vouchers')->name('admin.vouchers.')->group(function () {

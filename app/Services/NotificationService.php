@@ -93,4 +93,125 @@ class NotificationService
             Log::error("Failed to write message log: {$e->getMessage()}");
         }
     }
+
+    /**
+     * Kirim pesan uji ke Telegram. @return array{success: bool, message: string}
+     */
+    public function testTelegram(string $token, string $chatId): array
+    {
+        if ($token === '' || $chatId === '') {
+            return ['success' => false, 'message' => 'Bot Token dan Chat ID wajib diisi.'];
+        }
+
+        try {
+            $response = Http::post("https://api.telegram.org/bot{$token}/sendMessage", [
+                'chat_id' => $chatId,
+                'text' => 'Uji koneksi NuxBill: notifikasi Telegram berfungsi.',
+            ]);
+
+            if ($response->successful() && $response->json('ok')) {
+                return ['success' => true, 'message' => 'Pesan uji berhasil terkirim ke Telegram.'];
+            }
+
+            return ['success' => false, 'message' => 'Gagal: '.$response->json('description', 'respon tidak dikenal')];
+        } catch (Throwable $e) {
+            return ['success' => false, 'message' => 'Gagal: '.$e->getMessage()];
+        }
+    }
+
+    /**
+     * Kirim pesan uji via GOWA. @return array{success: bool, message: string}
+     */
+    public function testWhatsapp(string $serverUrl, string $deviceId, string $username, string $password, string $testPhone): array
+    {
+        if ($serverUrl === '') {
+            return ['success' => false, 'message' => 'Server URL wajib diisi.'];
+        }
+        if ($testPhone === '') {
+            return ['success' => false, 'message' => 'Nomor tujuan uji wajib diisi.'];
+        }
+
+        $jid = $this->formatPhone($testPhone).'@s.whatsapp.net';
+
+        try {
+            $response = Http::withBasicAuth($username, $password)
+                ->withHeaders(['X-Device-Id' => $deviceId])
+                ->post(rtrim($serverUrl, '/').'/send/message', [
+                    'phone' => $jid,
+                    'message' => 'Uji koneksi NuxBill: notifikasi WhatsApp berfungsi.',
+                ]);
+
+            if ($response->successful() && $response->json('code') === 'SUCCESS') {
+                return ['success' => true, 'message' => 'Pesan uji berhasil terkirim via WhatsApp.'];
+            }
+
+            return ['success' => false, 'message' => 'Gagal: '.$response->body()];
+        } catch (Throwable $e) {
+            return ['success' => false, 'message' => 'Gagal: '.$e->getMessage()];
+        }
+    }
+
+    /**
+     * @return array{configured: bool, status: string, info: string}
+     */
+    public function telegramStatus(): array
+    {
+        $token = AppConfig::get('telegram_bot');
+        if ($token === '') {
+            return ['configured' => false, 'status' => 'not-configured', 'info' => 'Bot token belum diatur'];
+        }
+
+        try {
+            $response = Http::get("https://api.telegram.org/bot{$token}/getMe");
+            if ($response->successful() && $response->json('ok')) {
+                $username = $response->json('result.username', '');
+
+                return ['configured' => true, 'status' => 'connected', 'info' => $username !== '' ? '@'.$username : 'Bot terhubung'];
+            }
+
+            return ['configured' => true, 'status' => 'error', 'info' => $response->json('description', 'Token tidak valid')];
+        } catch (Throwable $e) {
+            return ['configured' => true, 'status' => 'error', 'info' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * @return array{configured: bool, status: string, info: string}
+     */
+    public function whatsappStatus(): array
+    {
+        $serverUrl = AppConfig::get('alt_wga_server_url');
+        if ($serverUrl === '') {
+            return ['configured' => false, 'status' => 'not-configured', 'info' => 'Server URL belum diatur'];
+        }
+
+        try {
+            Http::timeout(3)->get(rtrim($serverUrl, '/').'/health');
+        } catch (Throwable $e) {
+            return ['configured' => true, 'status' => 'error', 'info' => 'Server tidak dapat dijangkau'];
+        }
+
+        $deviceId = AppConfig::get('alt_wga_device_id');
+        if ($deviceId === '') {
+            return ['configured' => true, 'status' => 'server-up', 'info' => 'Server aktif, Device ID belum diatur'];
+        }
+
+        try {
+            $response = Http::withBasicAuth((string) AppConfig::get('alt_wga_username'), (string) AppConfig::get('alt_wga_password'))
+                ->withHeaders(['X-Device-Id' => $deviceId])
+                ->get(rtrim($serverUrl, '/').'/app/status');
+
+            $results = $response->json('results');
+            if ($results && ($results['is_connected'] ?? false) && ($results['is_logged_in'] ?? false)) {
+                return ['configured' => true, 'status' => 'connected', 'info' => 'Device terhubung & login'];
+            }
+            if ($results && ($results['is_logged_in'] ?? false)) {
+                return ['configured' => true, 'status' => 'connected', 'info' => 'Device login (belum terhubung)'];
+            }
+
+            return ['configured' => true, 'status' => 'error', 'info' => 'Device tidak terhubung / belum login'];
+        } catch (Throwable $e) {
+            return ['configured' => true, 'status' => 'error', 'info' => 'Gagal cek status device'];
+        }
+    }
 }

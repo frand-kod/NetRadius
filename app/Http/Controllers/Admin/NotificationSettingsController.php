@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppConfig;
+use App\Services\NotificationService;
 use App\Services\NotificationTemplateService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,6 +14,10 @@ use Inertia\Response;
 
 class NotificationSettingsController extends Controller
 {
+    public function __construct(
+        private readonly NotificationService $notifications,
+    ) {}
+
     private const KEYS = [
         'telegram_bot',
         'telegram_target_id',
@@ -75,5 +81,35 @@ class NotificationSettingsController extends Controller
         }
 
         return back()->with('success', 'Pengaturan notifikasi disimpan.');
+    }
+
+    public function test(Request $request): JsonResponse
+    {
+        $channel = $request->input('channel');
+
+        $result = match ($channel) {
+            'telegram' => $this->notifications->testTelegram(
+                (string) $request->input('telegram_bot', ''),
+                (string) $request->input('telegram_target_id', ''),
+            ),
+            'whatsapp' => $this->notifications->testWhatsapp(
+                (string) $request->input('alt_wga_server_url', ''),
+                (string) $request->input('alt_wga_device_id', ''),
+                (string) $request->input('alt_wga_username', ''),
+                (string) $request->input('alt_wga_password', ''),
+                (string) $request->input('test_phone', ''),
+            ),
+            default => ['success' => false, 'message' => 'Channel tidak dikenal.'],
+        };
+
+        return response()->json($result);
+    }
+
+    public function status(): JsonResponse
+    {
+        return response()->json([
+            'telegram' => $this->notifications->telegramStatus(),
+            'whatsapp' => $this->notifications->whatsappStatus(),
+        ]);
     }
 }
