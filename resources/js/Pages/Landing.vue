@@ -148,7 +148,7 @@
             &copy; {{ new Date().getFullYear() }} {{ app?.name }}. All rights reserved.
           </p>
           <p class="text-xs text-slate-400 dark:text-slate-500">
-            {{ app?.name }} v{{ app?.version }} &bull; Laravel &bull; MikroTik &bull; FreeRADIUS
+            {{ app?.name }} v{{ app?.version }}
           </p>
         </div>
       </div>
