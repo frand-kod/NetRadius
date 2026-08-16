@@ -34,7 +34,7 @@ class ProfileController extends Controller
         $data = $request->validate([
             'fullname' => ['required', 'string', 'max:255'],
             'phonenumber' => ['nullable', 'string', 'max:255'],
-            'current_password' => ['required_with:password', 'string'],
+            'current_password' => ['nullable', 'required_with:password', 'string'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 

@@ -38,6 +38,25 @@ class ProfileTest extends TestCase
         $this->assertTrue(Hash::check('newpass123', $user->fresh()->password));
     }
 
+    public function test_admin_partial_update_without_password(): void
+    {
+        $user = User::factory()->create(['password' => Hash::make('oldpass123')]);
+
+        $this->actingAs($user, 'web')
+            ->post('/admin/profile', [
+                'fullname' => 'Nama Baru',
+                'phone' => '',
+                'email' => '',
+                'current_password' => '',
+                'password' => '',
+                'password_confirmation' => '',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('Nama Baru', $user->fresh()->fullname);
+        $this->assertTrue(Hash::check('oldpass123', $user->fresh()->password));
+    }
+
     public function test_admin_cannot_change_password_with_wrong_current_password(): void
     {
         $user = User::factory()->create(['password' => Hash::make('oldpass123')]);
