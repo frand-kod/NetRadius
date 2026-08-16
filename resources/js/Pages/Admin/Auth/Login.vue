@@ -12,46 +12,48 @@ function submit() {
 </script>
 
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-950 p-4">
+    <div class="flex min-h-screen items-center justify-center bg-gray-950 p-4">
         <div class="w-full max-w-sm">
             <!-- Header -->
             <div class="mb-10 text-center">
-                <div class="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-amber-600/10 border border-amber-600/20 mb-6">
-                    <span class="text-xl font-bold text-amber-500">B</span>
+                <div class="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-lg border border-amber-600/20 bg-amber-600/10">
+                    <span class="text-xl font-bold text-amber-500">N</span>
                 </div>
-                <h1 class="text-xl font-semibold text-white tracking-wide">PHPNuxBill</h1>
-                <p class="text-xs text-gray-500 mt-2 uppercase tracking-widest">Admin Control Plane</p>
+                <h1 class="text-xl font-semibold tracking-wide text-white">NuxBill</h1>
+                <p class="mt-2 text-xs uppercase tracking-widest text-gray-500">Panel Admin</p>
             </div>
 
             <!-- Login Card -->
-            <div class="bg-gray-900 border border-gray-800 p-8 rounded-xl shadow-2xl">
+            <div class="rounded-xl border border-gray-800 bg-gray-900 p-8 shadow-2xl">
                 <form @submit.prevent="submit" class="space-y-6">
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Username</label>
+                        <label class="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-400">Username</label>
                         <input v-model="form.username" type="text" required autofocus
-                               class="w-full bg-gray-950 border border-gray-700 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all outline-none" 
-                               placeholder="Enter your username" />
-                        <p v-if="form.errors.username" class="text-red-500 text-[10px] mt-2">{{ form.errors.username }}</p>
+                               class="w-full rounded-lg border border-gray-700 bg-gray-950 px-4 py-3 text-sm text-white outline-none transition-all placeholder-gray-600 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                               placeholder="Masukkan username" />
+                        <p v-if="form.errors.username" class="mt-2 text-[10px] text-red-500">{{ form.errors.username }}</p>
                     </div>
-                    
+
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Password</label>
+                        <label class="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-400">Password</label>
                         <input v-model="form.password" type="password" required
-                               class="w-full bg-gray-950 border border-gray-700 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-600 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all outline-none"
+                               class="w-full rounded-lg border border-gray-700 bg-gray-950 px-4 py-3 text-sm text-white outline-none transition-all placeholder-gray-600 focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
                                placeholder="••••••••" />
+                        <p v-if="form.errors.password" class="mt-2 text-[10px] text-red-500">{{ form.errors.password }}</p>
                     </div>
 
                     <button type="submit" :disabled="form.processing"
-                            class="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-lg text-sm font-semibold transition-all duration-200 disabled:opacity-50">
-                        {{ form.processing ? 'Authenticating...' : 'Sign In' }}
+                            class="w-full rounded-lg bg-amber-600 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500/50 disabled:opacity-50">
+                        {{ form.processing ? 'Memproses...' : 'Masuk' }}
                     </button>
                 </form>
             </div>
 
             <!-- Footer -->
             <div class="mt-8 text-center">
-                <a href="/admin-forgot-password" class="text-[10px] text-gray-600 hover:text-amber-500 transition uppercase tracking-widest">
-                    Forgot Password?
+                <a href="/admin-forgot-password"
+                   class="text-[10px] uppercase tracking-widest text-gray-600 transition hover:text-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500">
+                    Lupa Password?
                 </a>
             </div>
         </div>
