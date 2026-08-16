@@ -21,7 +21,3 @@ NetRadius adalah solusi billing hotspot Mikrotik, dirancang khusus untuk penggun
 - **Integrasi Mikrotik & RADIUS:** Provisioning otomatis, autentikasi berbasis voucher.
 - **Otomatisasi:** Cron job untuk expired plan, reminder notifikasi (WhatsApp/Telegram).
 
-## Fitur yang Tidak Ada (Sengaja Dihapus)
-- Tidak ada fitur balance/saldo customer.
-- Tidak ada payment gateway pihak ketiga (menggunakan QR statis & approve manual).
-- Tidak ada fitur mid-cycle plan switch.
