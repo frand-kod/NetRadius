@@ -36,33 +36,47 @@ class DashboardController extends Controller
 
         ['onlineUsers' => $onlineUsers, 'usage' => $usage] = $this->usageStats();
 
-        // --- Customer baru per bulan (12 bulan terakhir) ---
-        $customerTrend = collect(range(0, 11))->map(function (int $i) {
+        // --- Customer baru per bulan (12 bulan terakhir) — 1 query GROUP BY ---
+        $monthlyCustomers = Customer::where('created_at', '>=', now()->subMonths(11)->startOfMonth())
+            ->selectRaw("strftime('%Y-%m', created_at) as ym")
+            ->selectRaw('count(*) as total')
+            ->groupBy('ym')
+            ->pluck('total', 'ym');
+
+        $customerTrend = collect(range(0, 11))->map(function (int $i) use ($monthlyCustomers) {
             $m = now()->subMonths(11 - $i);
 
             return [
                 'label' => $m->format('M'),
-                'value' => Customer::whereYear('created_at', $m->year)
-                    ->whereMonth('created_at', $m->month)
-                    ->count(),
+                'value' => (int) ($monthlyCustomers[$m->format('Y-m')] ?? 0),
             ];
         });
 
-        // --- Pendapatan per hari (30 hari terakhir) ---
-        $incomeTrend = collect(range(0, 29))->map(function (int $i) {
+        // --- Pendapatan per hari (30 hari terakhir) — 1 query GROUP BY ---
+        $dailyIncome = Transaction::where('recharged_on', '>=', now()->subDays(29)->toDateString())
+            ->selectRaw("strftime('%Y-%m-%d', recharged_on) as d")
+            ->selectRaw('coalesce(sum(price), 0) as total')
+            ->groupBy('d')
+            ->pluck('total', 'd');
+
+        $incomeTrend = collect(range(0, 29))->map(function (int $i) use ($dailyIncome) {
             $d = now()->subDays(29 - $i);
 
             return [
                 'label' => $d->format('d/m'),
-                'value' => (float) Transaction::whereDate('recharged_on', $d->toDateString())
-                    ->sum('price'),
+                'value' => (float) ($dailyIncome[$d->toDateString()] ?? 0),
             ];
         });
 
-        // --- Distribusi status customer ---
+        // --- Distribusi status customer — 1 query GROUP BY ---
         $statuses = ['Active', 'Banned', 'Disabled', 'Inactive', 'Limited', 'Suspended'];
+        $statusCounts = Customer::select('status')
+            ->selectRaw('count(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
         $customerStatus = collect($statuses)
-            ->map(fn (string $s) => ['label' => $s, 'value' => Customer::where('status', $s)->count()])
+            ->map(fn (string $s) => ['label' => $s, 'value' => (int) ($statusCounts[$s] ?? 0)])
             ->filter(fn (array $s) => $s['value'] > 0)
             ->values();
 
@@ -197,25 +211,35 @@ class DashboardController extends Controller
         $totalUp = 0;
         $totalTime = 0;
 
-        foreach ($activeUsernames as $username) {
-            $row = DB::table('rad_acct')->where('username', $username)->orderByDesc('id')->first();
-            $down = (int) ($row->acctinputoctets ?? 0);
-            $up = (int) ($row->acctoutputoctets ?? 0);
-            $time = (int) ($row->acctsessiontime ?? 0);
-            $totalDown += $down;
-            $totalUp += $up;
-            $totalTime += $time;
+        if ($activeUsernames->isNotEmpty()) {
+            // Satu query ambil semua baris sesi aktif, lalu ambil baris terbaru per
+            // user di PHP — menghindari N+1 (`per username → orderByDesc id`).
+            $latestByUser = DB::table('rad_acct')
+                ->whereIn('username', $activeUsernames)
+                ->orderByDesc('id')
+                ->get()
+                ->groupBy('username')
+                ->map(fn ($group) => $group->first());
 
-            $onlineUsers->push((object) [
-                'username' => $row->username,
-                'framedipaddress' => $row->framedipaddress,
-                'macaddr' => $row->macaddr,
-                'dateAdded' => $row->dateAdded,
-                'down' => $down,
-                'up' => $up,
-                'volume' => $down + $up,
-                'time' => $time,
-            ]);
+            foreach ($latestByUser as $row) {
+                $down = (int) ($row->acctinputoctets ?? 0);
+                $up = (int) ($row->acctoutputoctets ?? 0);
+                $time = (int) ($row->acctsessiontime ?? 0);
+                $totalDown += $down;
+                $totalUp += $up;
+                $totalTime += $time;
+
+                $onlineUsers->push((object) [
+                    'username' => $row->username,
+                    'framedipaddress' => $row->framedipaddress,
+                    'macaddr' => $row->macaddr,
+                    'dateAdded' => $row->dateAdded,
+                    'down' => $down,
+                    'up' => $up,
+                    'volume' => $down + $up,
+                    'time' => $time,
+                ]);
+            }
         }
 
         $onlineUsers = $onlineUsers->sortByDesc('volume')->take(10)->values();
