@@ -1,20 +1,21 @@
 <template>
-  <div class="min-h-screen bg-white text-slate-900 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
+  <div class="min-h-screen bg-white text-slate-900 font-sans antialiased transition-colors selection:bg-blue-100 selection:text-blue-900 dark:bg-slate-950 dark:text-slate-100 dark:selection:bg-blue-900 dark:selection:text-blue-100">
     <!-- Navigation -->
-    <nav class="h-20 border-b border-slate-100 sticky top-0 bg-white/80 backdrop-blur-md z-50">
+    <nav class="h-20 border-b border-slate-100 sticky top-0 bg-white/80 backdrop-blur-md z-50 dark:border-slate-800 dark:bg-slate-950/80">
       <div class="max-w-7xl mx-auto px-8 h-full flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-slate-900 rounded flex items-center justify-center">
+          <div class="w-10 h-10 bg-slate-900 rounded flex items-center justify-center dark:bg-slate-800">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
           </div>
           <span class="text-xl font-bold tracking-tight uppercase">NuxBill</span>
         </div>
         <div class="hidden md:flex items-center gap-8">
-          <a href="#features" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Fitur</a>
-          <a href="#use-cases" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Penggunaan</a>
-          <div class="h-4 w-px bg-slate-200"></div>
-          <a href="/customer/login" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Portal Pelanggan</a>
-          <a href="/admin/login" class="px-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded hover:bg-slate-800 transition-all shadow-sm active:scale-95">
+          <a href="#features" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors dark:text-slate-400 dark:hover:text-white">Fitur</a>
+          <a href="#use-cases" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors dark:text-slate-400 dark:hover:text-white">Penggunaan</a>
+          <ThemeToggler />
+          <div class="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
+          <a href="/customer/login" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors dark:text-slate-300 dark:hover:text-white">Portal Pelanggan</a>
+          <a href="/admin/login" class="px-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded hover:bg-slate-800 transition-all shadow-sm active:scale-95 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white">
             Admin Login
           </a>
         </div>
@@ -22,23 +23,23 @@
     </nav>
 
     <!-- Hero Section -->
-    <header class="pt-32 pb-24 overflow-hidden border-b border-slate-50">
+    <header class="pt-32 pb-24 overflow-hidden border-b border-slate-50 dark:border-slate-800/60">
       <div class="max-w-7xl mx-auto px-8">
         <div class="max-w-3xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 border border-slate-100 rounded text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 border border-slate-100 rounded text-[11px] font-bold uppercase tracking-widest text-slate-500 mb-8 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400">
             Penyederhanaan Billing Hotspot
           </div>
-          <h1 class="text-6xl md:text-7xl font-bold text-slate-900 leading-[1.1] tracking-tight mb-8">
-            Manajemen Hotspot Mikrotik <span class="text-slate-400">Tanpa Setup Rumit.</span>
+          <h1 class="text-6xl md:text-7xl font-bold text-slate-900 leading-[1.1] tracking-tight mb-8 dark:text-white">
+            Manajemen Hotspot Mikrotik <span class="text-slate-400 dark:text-slate-500">Tanpa Setup Rumit.</span>
           </h1>
-          <p class="text-xl text-slate-500 leading-relaxed mb-12 max-w-2xl">
+          <p class="text-xl text-slate-500 leading-relaxed mb-12 max-w-2xl dark:text-slate-400">
             Solusi billing hotspot profesional yang dioptimalkan untuk ISP rumahan dan single admin. Menggabungkan Laravel 13, MikroTik, dan FreeRADIUS dalam satu alur kerja yang intuitif.
           </p>
           <div class="flex flex-wrap gap-4">
-            <a href="/admin/login" class="px-8 py-4 bg-slate-900 text-white font-bold rounded hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 active:scale-95">
+            <a href="/admin/login" class="px-8 py-4 bg-slate-900 text-white font-bold rounded hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 active:scale-95 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white dark:shadow-black/40">
               Mulai Sekarang
             </a>
-            <a href="#features" class="px-8 py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded hover:bg-slate-50 transition-all active:scale-95">
+            <a href="#features" class="px-8 py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded hover:bg-slate-50 transition-all active:scale-95 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
               Lihat Detail Fitur
             </a>
           </div>
@@ -47,7 +48,7 @@
     </header>
 
     <!-- Stats/Context -->
-    <section class="py-20 bg-slate-900 text-white">
+    <section class="py-20 bg-slate-900 text-white dark:bg-slate-800">
       <div class="max-w-7xl mx-auto px-8 grid md:grid-cols-3 gap-16">
         <div>
           <div class="text-4xl font-bold mb-4">01.</div>
@@ -68,46 +69,46 @@
     </section>
 
     <!-- Features -->
-    <section id="features" class="py-32 bg-white">
+    <section id="features" class="py-32 bg-white dark:bg-slate-950">
       <div class="max-w-7xl mx-auto px-8">
         <div class="mb-20">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 block">Arsitektur</span>
-          <h2 class="text-4xl font-bold text-slate-900 tracking-tight">Fitur Inti Sistem</h2>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 block dark:text-slate-500">Arsitektur</span>
+          <h2 class="text-4xl font-bold text-slate-900 tracking-tight dark:text-white">Fitur Inti Sistem</h2>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-1">
-          <div v-for="feature in features" :key="feature.title" class="p-10 border border-slate-100 hover:border-slate-200 transition-all group">
-            <div class="w-12 h-12 bg-slate-50 rounded flex items-center justify-center mb-8 group-hover:bg-slate-900 group-hover:text-white transition-all">
+          <div v-for="feature in features" :key="feature.title" class="p-10 border border-slate-100 hover:border-slate-200 transition-all group dark:border-slate-800 dark:hover:border-slate-700">
+            <div class="w-12 h-12 bg-slate-50 rounded flex items-center justify-center mb-8 group-hover:bg-slate-900 group-hover:text-white transition-all dark:bg-slate-800 dark:group-hover:bg-slate-100 dark:group-hover:text-slate-900">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" v-html="feature.icon"></svg>
             </div>
-            <h4 class="text-lg font-bold mb-4">{{ feature.title }}</h4>
-            <p class="text-sm text-slate-500 leading-relaxed">{{ feature.desc }}</p>
+            <h4 class="text-lg font-bold mb-4 dark:text-white">{{ feature.title }}</h4>
+            <p class="text-sm text-slate-500 leading-relaxed dark:text-slate-400">{{ feature.desc }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Use Cases -->
-    <section id="use-cases" class="py-32 bg-slate-50">
+    <section id="use-cases" class="py-32 bg-slate-50 dark:bg-slate-900">
       <div class="max-w-7xl mx-auto px-8">
         <div class="grid lg:grid-cols-2 gap-24 items-center">
           <div>
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 block">Implementasi</span>
-            <h2 class="text-5xl font-bold text-slate-900 tracking-tight mb-8 leading-tight">Dirancang untuk Alur Kerja yang <span class="text-slate-400">Realistis.</span></h2>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 block dark:text-slate-500">Implementasi</span>
+            <h2 class="text-5xl font-bold text-slate-900 tracking-tight mb-8 leading-tight dark:text-white">Dirancang untuk Alur Kerja yang <span class="text-slate-400 dark:text-slate-500">Realistis.</span></h2>
             <div class="space-y-12">
               <div v-for="usecase in usecases" :key="usecase.title" class="flex gap-6">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full border-2 border-slate-200 flex items-center justify-center text-xs font-bold text-slate-400">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full border-2 border-slate-200 flex items-center justify-center text-xs font-bold text-slate-400 dark:border-slate-700 dark:text-slate-400">
                   {{ usecase.id }}
                 </div>
                 <div>
-                  <h4 class="font-bold mb-2">{{ usecase.title }}</h4>
-                  <p class="text-sm text-slate-500 leading-relaxed">{{ usecase.desc }}</p>
+                  <h4 class="font-bold mb-2 dark:text-white">{{ usecase.title }}</h4>
+                  <p class="text-sm text-slate-500 leading-relaxed dark:text-slate-400">{{ usecase.desc }}</p>
                 </div>
               </div>
             </div>
           </div>
           <div class="relative">
-            <div class="aspect-square bg-slate-900 rounded shadow-2xl flex items-center justify-center p-12 overflow-hidden">
+            <div class="aspect-square bg-slate-900 rounded shadow-2xl flex items-center justify-center p-12 overflow-hidden dark:bg-slate-800">
                <div class="w-full grid grid-cols-4 gap-4 opacity-20">
                  <div v-for="i in 16" :key="i" class="h-24 bg-white/20 rounded"></div>
                </div>
@@ -121,15 +122,15 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 border-t border-slate-100">
+    <footer class="py-12 border-t border-slate-100 dark:border-slate-800">
       <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
         <div class="flex items-center gap-3 grayscale opacity-50">
-          <div class="w-6 h-6 bg-slate-900 rounded flex items-center justify-center">
+          <div class="w-6 h-6 bg-slate-900 rounded flex items-center justify-center dark:bg-slate-800">
             <span class="text-[10px] text-white font-bold">N</span>
           </div>
           <span class="text-xs font-bold tracking-widest uppercase">NuxBill</span>
         </div>
-        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
+        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-widest dark:text-slate-500">
           &copy; {{ new Date().getFullYear() }} Personal Project &bull; Laravel 13 &bull; SQLite
         </div>
       </div>
@@ -138,6 +139,8 @@
 </template>
 
 <script setup>
+import ThemeToggler from '@/Components/ThemeToggler.vue';
+
 const features = [
   {
     title: 'Admin Panel Modern',

@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+/* Dark mode is class-based (toggled via .dark on <html> by useTheme.js),
+   not media-query based. Without this, `dark:` variants would ignore the
+   user toggle and only follow the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../../resources/js/**/*.vue';
