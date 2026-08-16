@@ -19,13 +19,11 @@ class Voucher extends Model
     /** @var array<int, string> */
     protected $fillable = [
         'type',
-        'routers',
         'id_plan',
         'code',
         'user',
         'status',
         'used_date',
-        'generated_by',
     ];
 
     /**

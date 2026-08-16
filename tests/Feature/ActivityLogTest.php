@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\ActivityLog;
+use App\Models\Customer;
 use App\Models\Plan;
 use App\Models\User;
+use App\Services\VoucherService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
@@ -35,19 +38,6 @@ class ActivityLogTest extends TestCase
         $this->assertDatabaseCount('tbl_logs', 0);
     }
 
-    public function test_updating_and_deleting_a_router_writes_log_entries(): void
-    {
-        $admin = User::factory()->create();
-        $this->actingAs($admin, 'web');
-
-        $router = \App\Models\Router::factory()->create();
-        $router->update(['description' => 'updated']);
-        $router->delete();
-
-        $this->assertDatabaseHas('tbl_logs', ['type' => 'update', 'userid' => $admin->id]);
-        $this->assertDatabaseHas('tbl_logs', ['type' => 'delete', 'userid' => $admin->id]);
-    }
-
     public function test_admin_login_event_is_logged(): void
     {
         $admin = User::factory()->create();
@@ -59,7 +49,7 @@ class ActivityLogTest extends TestCase
 
     public function test_customer_login_does_not_write_admin_activity_log(): void
     {
-        $customer = \App\Models\Customer::factory()->create();
+        $customer = Customer::factory()->create();
 
         Auth::guard('customer')->login($customer);
 
@@ -71,9 +61,9 @@ class ActivityLogTest extends TestCase
         $admin = User::factory()->create();
         $plan = Plan::factory()->create();
 
-        app(\App\Services\VoucherService::class)->generate($plan, 5, 8, $admin->id);
+        app(VoucherService::class)->generate($plan, 5, 8, $admin->id);
 
         $this->assertDatabaseHas('tbl_logs', ['type' => 'generate', 'userid' => $admin->id]);
-        $this->assertSame(1, \App\Models\ActivityLog::where('type', 'generate')->count());
+        $this->assertSame(1, ActivityLog::where('type', 'generate')->count());
     }
 }

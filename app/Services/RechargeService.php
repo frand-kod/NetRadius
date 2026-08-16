@@ -19,7 +19,6 @@ class RechargeService
     public function recharge(
         ?Customer $customer,
         Plan $plan,
-        string $routerName,
         string $gateway,
         string $channel,
         ?int $adminId = null,
@@ -31,7 +30,7 @@ class RechargeService
         $customerId = $isVoucher ? 0 : $customer->id;
 
         $deviceCustomer = $isVoucher
-            ? new Customer(['username' => $channel, 'password' => $channel, 'fullname' => $gateway, 'email' => ''])
+            ? new Customer(['username' => $channel, 'password' => $channel, 'fullname' => $gateway])
             : $customer;
 
         $expiresAt = $this->calculateExpiry($plan);
@@ -40,7 +39,6 @@ class RechargeService
         $now = Carbon::now();
 
         $existingQuery = UserRecharge::query()
-            ->where('routers', $routerName)
             ->where('type', $plan->type);
 
         $existing = $isVoucher
@@ -51,7 +49,7 @@ class RechargeService
             throw new ActivePlanStillActiveException($existing);
         }
 
-        $recharge = $existing ?? new UserRecharge();
+        $recharge = $existing ?? new UserRecharge;
         $recharge->fill([
             'customer_id' => $customerId,
             'username' => $identityUsername,
@@ -63,7 +61,6 @@ class RechargeService
             'time' => $expirationTime,
             'status' => 'on',
             'method' => "{$gateway} - {$channel}",
-            'routers' => $routerName,
             'type' => $plan->type,
             'admin_id' => $adminId ?? 0,
         ]);
@@ -88,9 +85,7 @@ class RechargeService
             'expiration' => $expirationDate,
             'time' => $expirationTime,
             'method' => "{$gateway} - {$channel}",
-            'routers' => $routerName,
             'type' => $plan->type,
-            'note' => '',
             'admin_id' => $adminId ?? 0,
         ]);
 

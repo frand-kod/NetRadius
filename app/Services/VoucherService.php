@@ -14,14 +14,12 @@ class VoucherService
      */
     public function generate(Plan $plan, int $quantity, int $codeLength = 8, ?int $adminId = null): Collection
     {
-        $vouchers = collect(range(1, $quantity))->map(function () use ($plan, $codeLength, $adminId) {
+        $vouchers = collect(range(1, $quantity))->map(function () use ($plan, $codeLength) {
             return Voucher::create([
                 'type' => 'Hotspot',
-                'routers' => 'radius',
                 'id_plan' => $plan->id,
                 'code' => $this->uniqueCode($codeLength),
                 'status' => '0',
-                'generated_by' => $adminId ?? 0,
             ]);
         });
 

@@ -10,7 +10,7 @@ class ActivePlanStillActiveException extends RuntimeException
     public function __construct(public readonly UserRecharge $activeRecharge)
     {
         parent::__construct(
-            "Customer already has an active plan on router [{$activeRecharge->routers}] expiring at {$activeRecharge->expiration->toDateString()} {$activeRecharge->time}."
+            "Customer already has an active plan [{$activeRecharge->namebp}] expiring at {$activeRecharge->expiration->toDateString()} {$activeRecharge->time}."
         );
     }
 }

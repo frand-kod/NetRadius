@@ -46,7 +46,6 @@ class PlanController extends Controller
             'name_plan' => ['required', 'string', 'max:40'],
             'id_bw' => ['required', 'integer', 'exists:tbl_bandwidth,id'],
             'price' => ['required', 'string', 'max:40'],
-            'price_old' => ['required', 'string', 'max:40'],
             'type' => ['required', 'in:Hotspot,PPPOE,VPN,Balance'],
             'typebp' => ['nullable', 'in:Unlimited,Limited'],
             'limit_type' => ['nullable', 'in:Time_Limit,Data_Limit,Both_Limit'],
@@ -57,18 +56,8 @@ class PlanController extends Controller
             'validity' => ['required', 'integer', 'min:0'],
             'validity_unit' => ['required', 'in:Mins,Hrs,Days,Months,Period'],
             'shared_users' => ['nullable', 'integer', 'min:0'],
-            'routers' => ['required', 'string', 'max:32'],
-            'is_radius' => ['boolean'],
-            'pool' => ['nullable', 'string', 'max:40'],
-            'plan_expired' => ['required', 'integer'],
-            'expired_date' => ['required', 'integer'],
             'enabled' => ['boolean'],
-            'allow_purchase' => ['required', 'in:yes,no'],
-            'prepaid' => ['required', 'in:yes,no'],
-            'plan_type' => ['required', 'in:Business,Personal'],
             'device' => ['required', 'string', 'max:32'],
-            'on_login' => ['nullable', 'string'],
-            'on_logout' => ['nullable', 'string'],
         ]);
 
         Plan::create($data);
@@ -90,7 +79,6 @@ class PlanController extends Controller
             'name_plan' => ['required', 'string', 'max:40'],
             'id_bw' => ['required', 'integer', 'exists:tbl_bandwidth,id'],
             'price' => ['required', 'string', 'max:40'],
-            'price_old' => ['required', 'string', 'max:40'],
             'type' => ['required', 'in:Hotspot,PPPOE,VPN,Balance'],
             'typebp' => ['nullable', 'in:Unlimited,Limited'],
             'limit_type' => ['nullable', 'in:Time_Limit,Data_Limit,Both_Limit'],
@@ -101,18 +89,8 @@ class PlanController extends Controller
             'validity' => ['required', 'integer', 'min:0'],
             'validity_unit' => ['required', 'in:Mins,Hrs,Days,Months,Period'],
             'shared_users' => ['nullable', 'integer', 'min:0'],
-            'routers' => ['required', 'string', 'max:32'],
-            'is_radius' => ['boolean'],
-            'pool' => ['nullable', 'string', 'max:40'],
-            'plan_expired' => ['required', 'integer'],
-            'expired_date' => ['required', 'integer'],
             'enabled' => ['boolean'],
-            'allow_purchase' => ['required', 'in:yes,no'],
-            'prepaid' => ['required', 'in:yes,no'],
-            'plan_type' => ['required', 'in:Business,Personal'],
             'device' => ['required', 'string', 'max:32'],
-            'on_login' => ['nullable', 'string'],
-            'on_logout' => ['nullable', 'string'],
         ]);
 
         $plan->update($data);

@@ -25,3 +25,7 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Local tooling / generated artifacts (regenerable, not source)
+/.claude/
+/graphify-out/

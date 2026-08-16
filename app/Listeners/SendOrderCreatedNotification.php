@@ -4,26 +4,41 @@ namespace App\Listeners;
 
 use App\Events\OrderCreated;
 use App\Services\NotificationService;
+use App\Services\NotificationTemplateService;
 
 class SendOrderCreatedNotification
 {
-    public function __construct(private readonly NotificationService $notifications) {}
+    public function __construct(
+        private readonly NotificationService $notifications,
+        private readonly NotificationTemplateService $templates,
+    ) {}
 
     public function handle(OrderCreated $event): void
     {
         $order = $event->order->loadMissing('customer', 'plan');
-        $invoiceUrl = route('invoice.show', $order->invoice_token);
-        $price = number_format((float) $order->price, 0, ',', '.');
+        $customer = $order->customer;
 
-        if (! empty($order->customer->phonenumber) && strlen($order->customer->phonenumber) > 5) {
+        $data = [
+            'customer_name' => $customer->fullname ?? $customer->username ?? '',
+            'username' => $customer->username ?? '',
+            'plan' => $order->plan->name_plan ?? '',
+            'price' => number_format((float) $order->price, 0, ',', '.'),
+            'invoice_url' => route('invoice.show', $order->invoice_token),
+        ];
+
+        if ($this->templates->isEnabled('order_created')
+            && ! empty($customer->phonenumber)
+            && strlen($customer->phonenumber) > 5) {
             $this->notifications->sendWhatsapp(
-                $order->customer->phonenumber,
-                "Order baru dibuat untuk paket {$order->plan->name_plan} (Rp{$price}).\nSilakan lakukan pembayaran dan lihat invoice di:\n{$invoiceUrl}"
+                $customer->phonenumber,
+                $this->templates->render('order_created', $data)
             );
         }
 
-        $this->notifications->sendTelegram(
-            "#order_baru\nCustomer: {$order->customer->fullname} ({$order->customer->username})\nPaket: {$order->plan->name_plan}\nHarga: Rp{$price}\nInvoice: {$invoiceUrl}"
-        );
+        if ($this->templates->isEnabled('order_created_admin')) {
+            $this->notifications->sendTelegram(
+                $this->templates->render('order_created_admin', $data)
+            );
+        }
     }
 }

@@ -7,7 +7,7 @@ use App\Models\Customer;
 use App\Models\Plan;
 use App\Models\UserRecharge;
 use App\Services\Hotspot\HotspotDeviceInterface;
-use App\Services\Hotspot\MikrotikHotspotService;
+use App\Services\Hotspot\RadiusRestService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -54,7 +54,7 @@ class CheckExpiredPlansTest extends TestCase
             public function disconnectCustomer(Customer $customer, string $routerName): void {}
         };
 
-        $this->app->instance(MikrotikHotspotService::class, $fake);
+        $this->app->instance(RadiusRestService::class, $fake);
     }
 
     private function configureGowa(): void

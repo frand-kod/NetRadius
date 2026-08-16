@@ -6,6 +6,7 @@ use Database\Factories\UserRechargeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 class UserRecharge extends Model
 {
@@ -18,7 +19,7 @@ class UserRecharge extends Model
 
     protected $fillable = [
         'customer_id', 'username', 'plan_id', 'namebp', 'recharged_on', 'recharged_time',
-        'expiration', 'time', 'status', 'method', 'routers', 'type', 'admin_id',
+        'expiration', 'time', 'status', 'method', 'type', 'admin_id',
     ];
 
     protected function casts(): array
@@ -36,7 +37,7 @@ class UserRecharge extends Model
 
     public function isExpired(): bool
     {
-        $expiresAt = \Illuminate\Support\Carbon::parse($this->expiration->toDateString().' '.$this->time);
+        $expiresAt = Carbon::parse($this->expiration->toDateString().' '.$this->time);
 
         return $expiresAt->isPast();
     }

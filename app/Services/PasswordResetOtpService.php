@@ -14,7 +14,10 @@ class PasswordResetOtpService
 
     private const MAX_ATTEMPTS = 5;
 
-    public function __construct(private readonly NotificationService $notifications) {}
+    public function __construct(
+        private readonly NotificationService $notifications,
+        private readonly NotificationTemplateService $templates,
+    ) {}
 
     /**
      * Request an OTP for the given guard ("customer" or "admin"). Always
@@ -35,6 +38,10 @@ class PasswordResetOtpService
             return;
         }
 
+        if (! $this->templates->isEnabled('otp')) {
+            return;
+        }
+
         $cacheKey = $this->cacheKey($guard, $username);
         if (Cache::has($cacheKey)) {
             return;
@@ -43,7 +50,14 @@ class PasswordResetOtpService
         $otp = (string) random_int(100000, 999999);
         Cache::put($cacheKey, ['otp' => $otp, 'attempts' => self::MAX_ATTEMPTS], now()->addMinutes(self::TTL_MINUTES));
 
-        $this->notifications->sendWhatsapp($phone, "Kode verifikasi reset password Anda: {$otp} (berlaku ".self::TTL_MINUTES.' menit)');
+        $this->notifications->sendWhatsapp(
+            $phone,
+            $this->templates->render('otp', [
+                'otp' => $otp,
+                'ttl' => (string) self::TTL_MINUTES,
+                'username' => $username,
+            ])
+        );
     }
 
     /**

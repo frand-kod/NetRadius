@@ -10,9 +10,7 @@ import { Link } from '@inertiajs/vue3';
             <Link href="/admin/login" class="bg-amber-600 text-white px-6 py-2 rounded hover:bg-amber-700">
                 Admin Panel
             </Link>
-            <Link href="/customer/login" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-                Customer Login
-            </Link>
         </div>
     </div>
 </template>
+

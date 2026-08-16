@@ -22,8 +22,6 @@ class CustomerFactory extends Factory
             'password' => 'password',
             'fullname' => fake()->name(),
             'phonenumber' => fake()->phoneNumber(),
-            'email' => fake()->unique()->safeEmail(),
-            'service_type' => 'Hotspot',
             'status' => 'Active',
         ];
     }

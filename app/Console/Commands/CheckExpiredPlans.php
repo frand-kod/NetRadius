@@ -7,6 +7,7 @@ use App\Models\Plan;
 use App\Models\UserRecharge;
 use App\Services\Hotspot\HotspotDeviceResolver;
 use App\Services\NotificationService;
+use App\Services\NotificationTemplateService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -17,14 +18,20 @@ use Throwable;
 #[Description('Auto-disable expired plans on the device and send expiry reminders')]
 class CheckExpiredPlans extends Command
 {
-    public function handle(HotspotDeviceResolver $devices, NotificationService $notifications): void
-    {
-        $this->disableExpired($devices, $notifications);
-        $this->sendReminders($notifications);
+    public function handle(
+        HotspotDeviceResolver $devices,
+        NotificationService $notifications,
+        NotificationTemplateService $templates,
+    ): void {
+        $this->disableExpired($devices, $notifications, $templates);
+        $this->sendReminders($notifications, $templates);
     }
 
-    private function disableExpired(HotspotDeviceResolver $devices, NotificationService $notifications): void
-    {
+    private function disableExpired(
+        HotspotDeviceResolver $devices,
+        NotificationService $notifications,
+        NotificationTemplateService $templates,
+    ): void {
         $expired = UserRecharge::query()
             ->where('status', 'on')
             ->whereDate('expiration', '<=', Carbon::today())
@@ -55,10 +62,18 @@ class CheckExpiredPlans extends Command
 
             $recharge->update(['status' => 'off']);
 
-            if ($customer->exists && ! empty($customer->phonenumber) && strlen($customer->phonenumber) > 5) {
+            if ($templates->isEnabled('expired')
+                && $customer->exists
+                && ! empty($customer->phonenumber)
+                && strlen($customer->phonenumber) > 5) {
                 $notifications->sendWhatsapp(
                     $customer->phonenumber,
-                    "Paket {$recharge->namebp} Anda sudah expired pada {$recharge->expiration->toDateString()}. Silakan hubungi admin untuk perpanjangan."
+                    $templates->render('expired', [
+                        'customer_name' => $customer->fullname ?? $customer->username,
+                        'username' => $customer->username,
+                        'plan' => $recharge->namebp,
+                        'expired_at' => $recharge->expiration->toDateString(),
+                    ])
                 );
             }
 
@@ -66,7 +81,7 @@ class CheckExpiredPlans extends Command
         }
     }
 
-    private function sendReminders(NotificationService $notifications): void
+    private function sendReminders(NotificationService $notifications, NotificationTemplateService $templates): void
     {
         $day1 = Carbon::today()->addDay()->toDateString();
         $day3 = Carbon::today()->addDays(3)->toDateString();
@@ -96,9 +111,19 @@ class CheckExpiredPlans extends Command
                 continue;
             }
 
+            if (! $templates->isEnabled('reminder')) {
+                continue;
+            }
+
             $notifications->sendWhatsapp(
                 $customer->phonenumber,
-                "Pengingat: paket {$recharge->namebp} Anda akan expired dalam {$daysLeft} hari ({$expirationDate})."
+                $templates->render('reminder', [
+                    'customer_name' => $customer->fullname ?? $customer->username,
+                    'username' => $customer->username,
+                    'plan' => $recharge->namebp,
+                    'days_left' => (string) $daysLeft,
+                    'expired_at' => $expirationDate,
+                ])
             );
         }
     }

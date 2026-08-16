@@ -4,24 +4,26 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bandwidth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class BandwidthController extends Controller
 {
-    public function index(): \Inertia\Response
+    public function index(): Response
     {
         return Inertia::render('Admin/Bandwidth/Index', [
             'bandwidths' => Bandwidth::orderBy('id')->paginate(15),
         ]);
     }
 
-    public function create(): \Inertia\Response
+    public function create(): Response
     {
         return Inertia::render('Admin/Bandwidth/Create');
     }
 
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'name_bw' => ['required', 'string'],
@@ -29,7 +31,7 @@ class BandwidthController extends Controller
             'rate_down_unit' => ['required', 'in:Kbps,Mbps'],
             'rate_up' => ['required', 'integer', 'min:0'],
             'rate_up_unit' => ['required', 'in:Kbps,Mbps'],
-            'burst' => ['required', 'string', 'max:128'],
+            'burst' => ['nullable', 'string', 'max:128'],
         ]);
 
         Bandwidth::create($data);
@@ -37,14 +39,14 @@ class BandwidthController extends Controller
         return redirect()->route('admin.bandwidths.index')->with('success', 'Bandwidth berhasil dibuat.');
     }
 
-    public function edit(Bandwidth $bandwidth): \Inertia\Response
+    public function edit(Bandwidth $bandwidth): Response
     {
         return Inertia::render('Admin/Bandwidth/Edit', [
             'bandwidth' => $bandwidth,
         ]);
     }
 
-    public function update(Request $request, Bandwidth $bandwidth): \Illuminate\Http\RedirectResponse
+    public function update(Request $request, Bandwidth $bandwidth): RedirectResponse
     {
         $data = $request->validate([
             'name_bw' => ['required', 'string'],
@@ -52,7 +54,7 @@ class BandwidthController extends Controller
             'rate_down_unit' => ['required', 'in:Kbps,Mbps'],
             'rate_up' => ['required', 'integer', 'min:0'],
             'rate_up_unit' => ['required', 'in:Kbps,Mbps'],
-            'burst' => ['required', 'string', 'max:128'],
+            'burst' => ['nullable', 'string', 'max:128'],
         ]);
 
         $bandwidth->update($data);
@@ -60,7 +62,7 @@ class BandwidthController extends Controller
         return redirect()->route('admin.bandwidths.index')->with('success', 'Bandwidth berhasil diperbarui.');
     }
 
-    public function destroy(Bandwidth $bandwidth): \Illuminate\Http\RedirectResponse
+    public function destroy(Bandwidth $bandwidth): RedirectResponse
     {
         $bandwidth->delete();
 

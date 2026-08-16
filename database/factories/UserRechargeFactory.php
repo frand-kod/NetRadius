@@ -29,7 +29,6 @@ class UserRechargeFactory extends Factory
             'time' => now()->toTimeString(),
             'status' => 'on',
             'method' => '',
-            'routers' => fake()->domainWord(),
             'type' => 'Hotspot',
             'admin_id' => 0,
         ];

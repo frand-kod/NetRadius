@@ -20,11 +20,9 @@ class VoucherFactory extends Factory
     {
         return [
             'type' => 'Hotspot',
-            'routers' => 'radius',
             'id_plan' => Plan::factory(),
             'code' => fake()->unique()->bothify('VCH-####'),
             'status' => '0',
-            'generated_by' => 0,
         ];
     }
 }

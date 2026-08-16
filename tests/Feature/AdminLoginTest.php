@@ -12,6 +12,7 @@ class AdminLoginTest extends TestCase
 
     public function test_admin_can_login_with_valid_credentials(): void
     {
+        $this->startSession();
         $user = User::factory()->create([
             'username' => 'admin',
             'password' => bcrypt('password'),
@@ -29,6 +30,7 @@ class AdminLoginTest extends TestCase
 
     public function test_admin_cannot_login_with_invalid_password(): void
     {
+        $this->startSession();
         User::factory()->create([
             'username' => 'admin',
             'password' => bcrypt('password'),
@@ -46,6 +48,7 @@ class AdminLoginTest extends TestCase
 
     public function test_inactive_admin_cannot_login(): void
     {
+        $this->startSession();
         User::factory()->create([
             'username' => 'admin',
             'password' => bcrypt('password'),

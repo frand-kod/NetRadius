@@ -116,7 +116,6 @@ class NotificationTest extends TestCase
             'expiration' => now()->addDays(30)->toDateString(),
             'time' => now()->toTimeString(),
             'method' => 'QR Payment - manual',
-            'routers' => $plan->routers,
             'type' => $plan->type,
             'note' => '',
             'admin_id' => 1,

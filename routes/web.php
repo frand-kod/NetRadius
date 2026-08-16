@@ -5,13 +5,14 @@ use App\Http\Controllers\Admin\BandwidthController as AdminBandwidthController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ForgotPasswordController as AdminForgotPasswordController;
+use App\Http\Controllers\Admin\GeneralSettingsController as AdminGeneralSettingsController;
+use App\Http\Controllers\Admin\HelpController as AdminHelpController;
 use App\Http\Controllers\Admin\IncomeReportController as AdminIncomeReportController;
 use App\Http\Controllers\Admin\LogController as AdminLogController;
 use App\Http\Controllers\Admin\NotificationSettingsController as AdminNotificationSettingsController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PaymentSettingsController as AdminPaymentSettingsController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
-use App\Http\Controllers\Admin\RouterController as AdminRouterController;
 use App\Http\Controllers\Admin\VoucherController as AdminVoucherController;
 use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
@@ -21,7 +22,7 @@ use App\Http\Controllers\VoucherPrintController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return Inertia\Inertia::render('Public/Welcome');
+    return Inertia\Inertia::render('Landing');
 });
 
 Route::get('/invoice/{order:invoice_token}', [InvoiceController::class, 'show'])->name('invoice.show');
@@ -59,6 +60,15 @@ Route::middleware('auth:web')->get('/admin/income-report', [AdminIncomeReportCon
 Route::middleware('auth:web')->get('/admin/logs', [AdminLogController::class, 'index'])
     ->name('admin.logs');
 
+Route::middleware('auth:web')->get('/admin/help/{doc?}', [AdminHelpController::class, 'show'])
+    ->where('doc', 'how-to-use|freeradius|gowa-wa')
+    ->name('admin.help');
+
+Route::middleware('auth:web')->prefix('admin/settings/general')->name('admin.settings.general.')->group(function () {
+    Route::get('/', [AdminGeneralSettingsController::class, 'edit'])->name('edit');
+    Route::post('/', [AdminGeneralSettingsController::class, 'update'])->name('update');
+});
+
 Route::middleware('auth:web')->prefix('admin/settings/payment')->name('admin.settings.payment.')->group(function () {
     Route::get('/', [AdminPaymentSettingsController::class, 'edit'])->name('edit');
     Route::post('/', [AdminPaymentSettingsController::class, 'update'])->name('update');
@@ -71,8 +81,6 @@ Route::middleware('auth:web')->prefix('admin/settings/notification')->name('admi
 
 Route::middleware('auth:web')->prefix('admin/vouchers')->name('admin.vouchers.')->group(function () {
     Route::get('/', [AdminVoucherController::class, 'index'])->name('index');
-    Route::get('/create', [AdminVoucherController::class, 'create'])->name('create');
-    Route::post('/', [AdminVoucherController::class, 'store'])->name('store');
     Route::get('/{voucher}/edit', [AdminVoucherController::class, 'edit'])->name('edit');
     Route::put('/{voucher}', [AdminVoucherController::class, 'update'])->name('update');
     Route::delete('/{voucher}', [AdminVoucherController::class, 'destroy'])->name('destroy');
@@ -103,15 +111,6 @@ Route::middleware('auth:web')->prefix('admin/bandwidths')->name('admin.bandwidth
     Route::get('/{bandwidth}/edit', [AdminBandwidthController::class, 'edit'])->name('edit');
     Route::put('/{bandwidth}', [AdminBandwidthController::class, 'update'])->name('update');
     Route::delete('/{bandwidth}', [AdminBandwidthController::class, 'destroy'])->name('destroy');
-});
-
-Route::middleware('auth:web')->prefix('admin/routers')->name('admin.routers.')->group(function () {
-    Route::get('/', [AdminRouterController::class, 'index'])->name('index');
-    Route::get('/create', [AdminRouterController::class, 'create'])->name('create');
-    Route::post('/', [AdminRouterController::class, 'store'])->name('store');
-    Route::get('/{router}/edit', [AdminRouterController::class, 'edit'])->name('edit');
-    Route::put('/{router}', [AdminRouterController::class, 'update'])->name('update');
-    Route::delete('/{router}', [AdminRouterController::class, 'destroy'])->name('destroy');
 });
 
 // Admin forgot-password — guest-accessible flow outside the authed group.

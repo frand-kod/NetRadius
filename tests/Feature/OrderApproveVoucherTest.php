@@ -7,7 +7,7 @@ use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
 use App\Services\Hotspot\HotspotDeviceInterface;
-use App\Services\Hotspot\MikrotikHotspotService;
+use App\Services\Hotspot\RadiusRestService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -44,7 +44,7 @@ class OrderApproveVoucherTest extends TestCase
 
             public function disconnectCustomer(Customer $c, string $r): void {}
         };
-        $this->app->instance(MikrotikHotspotService::class, $fake);
+        $this->app->instance(RadiusRestService::class, $fake);
 
         $customer = Customer::factory()->create();
         $plan = Plan::factory()->create();
@@ -60,23 +60,5 @@ class OrderApproveVoucherTest extends TestCase
 
         $this->assertNotSame(404, $resp->status(), 'mark-as-paid returned 404');
         $this->assertSame('paid', $order->fresh()->status);
-    }
-
-    public function test_voucher_store_defaults_empty_user_to_string(): void
-    {
-        $admin = User::factory()->create(['status' => 'Active']);
-        $plan = Plan::factory()->create();
-
-        $resp = $this->actingAs($admin, 'web')->post('/admin/vouchers', [
-            'type' => 'Hotspot',
-            'routers' => 'radius',
-            'id_plan' => $plan->id,
-            'code' => 'TESTCODE1',
-            'user' => '',
-            'status' => '0',
-        ]);
-
-        $resp->assertSessionDoesntHaveErrors();
-        $this->assertDatabaseHas('tbl_voucher', ['code' => 'TESTCODE1', 'user' => '']);
     }
 }

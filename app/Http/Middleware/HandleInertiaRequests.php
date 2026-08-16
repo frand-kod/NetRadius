@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\AppConfig;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -38,6 +39,10 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => fn () => $request->user('web')?->only('id', 'username', 'fullname'),
                 'customer' => fn () => $request->user('customer')?->only('id', 'username', 'fullname'),
+            ],
+            'settings' => [
+                'company_name' => fn () => AppConfig::get('company_name', config('app.name', 'PHPNuxBill')),
+                'currency_symbol' => fn () => AppConfig::get('currency_symbol', 'Rp'),
             ],
         ]);
     }

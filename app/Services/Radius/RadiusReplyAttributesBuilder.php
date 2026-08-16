@@ -34,7 +34,8 @@ class RadiusReplyAttributesBuilder
         $unitUp = $bandwidth?->rate_up_unit === 'Kbps' ? 'K' : 'M';
         $rateUp = ($bandwidth->rate_up ?? 0).$unitUp;
         $rateDown = ($bandwidth->rate_down ?? 0).$unitDown;
-        $rate = "{$rateUp}/{$rateDown}";
+        // Mikrotik-Rate-Limit: rx/tx (rx=download, tx=upload) sesuai dokumentasi Mikrotik.
+        $rate = "{$rateDown}/{$rateUp}";
         $burst = trim((string) $bandwidth?->burst);
         $rateLimit = $burst !== '' ? "{$rate} {$burst}" : $rate;
 
@@ -58,10 +59,6 @@ class RadiusReplyAttributesBuilder
             'reply:expiration' => date('d M Y H:i:s', $expiresAt),
             'reply:WISPr-Session-Terminate-Time' => date('Y-m-d', $expiresAt).'T'.date('H:i:sP', $expiresAt),
         ];
-
-        if ($plan->type === 'PPPOE') {
-            $attrs['reply:Framed-Pool'] = $plan->pool;
-        }
 
         if ($plan->typebp === 'Limited') {
             $attrs = array_merge($attrs, $this->limitAttributes($plan, $recharge));

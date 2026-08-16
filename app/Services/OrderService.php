@@ -37,7 +37,6 @@ class OrderService
         $this->rechargeService->recharge(
             $order->customer,
             $order->plan,
-            $order->plan->routers,
             'QR Payment',
             $order->invoice_token,
             $adminId,

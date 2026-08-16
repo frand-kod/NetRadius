@@ -25,9 +25,7 @@ class IncomeReportTest extends TestCase
             'expiration' => now()->addDays(30)->toDateString(),
             'time' => '10:00:00',
             'method' => 'QR Payment - manual',
-            'routers' => 'router1',
             'type' => 'Hotspot',
-            'note' => '',
             'admin_id' => 1,
         ]);
     }

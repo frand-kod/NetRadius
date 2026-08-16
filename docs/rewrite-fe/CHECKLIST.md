@@ -20,6 +20,15 @@
 ## Public Pages
 - [x] 11-public-pages — Invoice, voucher print, welcome
 
+## Styling (disiapkan untuk Gemini Flash Lite)
+- [ ] 12-styling-system — Kamus desain & recipe kelas (sudah dibuat)
+- [ ] 13-styling-pages — Terapkan find-replace global + checklist per file (sudah dibuat)
+- [ ] 14-dashboard — Dashboard modern: KPI + BarChart/LineChart/DonutChart SVG + user online (sudah dibuat)
+
+## Settings Backend (SUDAH SELESAI — hanya tampilan yang di-delegasikan)
+- [x] Backend: GeneralSettingsController + PaymentSettingsController (instruksi + QR opsional) + shared setting global + route general + seeder default
+- [ ] 15-settings-pages — Tampilan 3 halaman Settings (General/Payment/Notification) + link sidebar (sudah dibuat, untuk Flash Lite)
+
 ## Cleanup
 - [x] 99-cleanup — Remove Filament (dilakukan lebih awal karena konflik route), run full test suite
 - [x] npm run build — sukses

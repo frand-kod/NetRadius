@@ -9,7 +9,7 @@ use App\Models\Plan;
 use App\Models\Transaction;
 use App\Models\UserRecharge;
 use App\Services\Hotspot\HotspotDeviceInterface;
-use App\Services\Hotspot\MikrotikHotspotService;
+use App\Services\Hotspot\RadiusRestService;
 use App\Services\RechargeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -52,7 +52,7 @@ class RechargeServiceTest extends TestCase
             public function disconnectCustomer(Customer $customer, string $routerName): void {}
         };
 
-        $this->app->instance(MikrotikHotspotService::class, $fake);
+        $this->app->instance(RadiusRestService::class, $fake);
 
         return $fake;
     }
@@ -65,12 +65,11 @@ class RechargeServiceTest extends TestCase
         $customer = Customer::factory()->create();
         $plan = Plan::factory()->create();
 
-        $transaction = app(RechargeService::class)->recharge($customer, $plan, $plan->routers, 'QR Payment', 'manual');
+        $transaction = app(RechargeService::class)->recharge($customer, $plan, 'QR Payment', 'manual');
 
         $this->assertDatabaseHas('tbl_user_recharges', [
             'customer_id' => $customer->id,
             'plan_id' => $plan->id,
-            'routers' => $plan->routers,
             'status' => 'on',
         ]);
         $this->assertInstanceOf(Transaction::class, $transaction);
@@ -84,7 +83,7 @@ class RechargeServiceTest extends TestCase
         $this->fakeDevice();
         $plan = Plan::factory()->create();
 
-        $transaction = app(RechargeService::class)->recharge(null, $plan, $plan->routers, 'Voucher', 'VOUCH123');
+        $transaction = app(RechargeService::class)->recharge(null, $plan, 'Voucher', 'VOUCH123');
 
         $this->assertDatabaseHas('tbl_user_recharges', [
             'customer_id' => 0,
@@ -100,11 +99,11 @@ class RechargeServiceTest extends TestCase
         $customer = Customer::factory()->create();
         $plan = Plan::factory()->create();
 
-        app(RechargeService::class)->recharge($customer, $plan, $plan->routers, 'QR Payment', 'manual');
+        app(RechargeService::class)->recharge($customer, $plan, 'QR Payment', 'manual');
 
         $this->expectException(ActivePlanStillActiveException::class);
 
-        app(RechargeService::class)->recharge($customer, $plan, $plan->routers, 'QR Payment', 'manual');
+        app(RechargeService::class)->recharge($customer, $plan, 'QR Payment', 'manual');
     }
 
     public function test_recharge_reuses_expired_user_recharge_row_instead_of_creating_new(): void
@@ -115,13 +114,12 @@ class RechargeServiceTest extends TestCase
 
         $expired = UserRecharge::factory()->create([
             'customer_id' => $customer->id,
-            'routers' => $plan->routers,
             'type' => $plan->type,
             'expiration' => now()->subDay()->toDateString(),
             'time' => now()->subDay()->toTimeString(),
         ]);
 
-        app(RechargeService::class)->recharge($customer, $plan, $plan->routers, 'QR Payment', 'manual');
+        app(RechargeService::class)->recharge($customer, $plan, 'QR Payment', 'manual');
 
         $this->assertSame(1, UserRecharge::count());
         $this->assertSame($expired->id, UserRecharge::first()->id);

@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Bandwidth;
 use App\Models\Plan;
-use App\Models\Router;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,8 +27,7 @@ class PlanFactory extends Factory
             'validity' => 30,
             'validity_unit' => 'Days',
             'shared_users' => 1,
-            'routers' => fn () => Router::factory()->create()->name,
-            'device' => 'MikrotikHotspot',
+            'device' => 'RadiusRest',
             'enabled' => true,
         ];
     }

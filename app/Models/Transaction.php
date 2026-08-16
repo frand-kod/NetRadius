@@ -22,9 +22,7 @@ class Transaction extends Model
         'expiration',
         'time',
         'method',
-        'routers',
         'type',
-        'note',
         'admin_id',
     ];
 

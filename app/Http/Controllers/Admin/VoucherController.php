@@ -36,35 +36,6 @@ class VoucherController extends Controller
         ]);
     }
 
-    public function create(): Response
-    {
-        return Inertia::render('Admin/Voucher/Create', [
-            'plans' => Plan::orderBy('name_plan')->get(['id', 'name_plan']),
-        ]);
-    }
-
-    public function store(Request $request): RedirectResponse
-    {
-        $data = $request->validate([
-            'type' => ['required', 'in:Hotspot,PPPOE'],
-            'routers' => ['required', 'string', 'max:32'],
-            'id_plan' => ['required', 'exists:tbl_plans,id'],
-            'code' => ['required', 'string', 'max:55', 'unique:tbl_voucher,code'],
-            'user' => ['nullable', 'string', 'max:45'],
-            'status' => ['required', 'in:0,1'],
-            'used_date' => ['nullable', 'date'],
-            'generated_by' => ['nullable', 'integer'],
-        ]);
-
-        // `user` is NOT NULL in the DB — default empty string (ConvertEmptyStringsToNull
-        // would otherwise turn a blank input into null and violate the constraint).
-        $data['user'] = $data['user'] ?? '';
-
-        Voucher::create($data);
-
-        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher berhasil dibuat.');
-    }
-
     public function edit(Voucher $voucher): Response
     {
         return Inertia::render('Admin/Voucher/Edit', [
@@ -77,14 +48,16 @@ class VoucherController extends Controller
     {
         $data = $request->validate([
             'type' => ['required', 'in:Hotspot,PPPOE'],
-            'routers' => ['required', 'string', 'max:32'],
             'id_plan' => ['required', 'exists:tbl_plans,id'],
             'code' => ['required', 'string', 'max:55', 'unique:tbl_voucher,code,'.$voucher->id],
             'user' => ['nullable', 'string', 'max:45'],
             'status' => ['required', 'in:0,1'],
             'used_date' => ['nullable', 'date'],
-            'generated_by' => ['nullable', 'integer'],
         ]);
+
+        // `user` NOT NULL — default ke string kosong (ConvertEmptyStringsToNull
+        // mengubah input kosong menjadi null yang melanggar constraint).
+        $data['user'] = $data['user'] ?? '';
 
         $voucher->update($data);
 

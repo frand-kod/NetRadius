@@ -8,7 +8,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Services\Hotspot\HotspotDeviceInterface;
-use App\Services\Hotspot\MikrotikHotspotService;
+use App\Services\Hotspot\RadiusRestService;
 use App\Services\OrderService;
 use App\Services\RechargeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -48,7 +48,7 @@ class OrderFlowTest extends TestCase
             public function disconnectCustomer(Customer $customer, string $routerName): void {}
         };
 
-        $this->app->instance(MikrotikHotspotService::class, $fake);
+        $this->app->instance(RadiusRestService::class, $fake);
     }
 
     public function test_order_service_creates_pending_order_and_dispatches_event(): void
@@ -108,7 +108,7 @@ class OrderFlowTest extends TestCase
         $customer = Customer::factory()->create();
         $plan = Plan::factory()->create();
 
-        app(RechargeService::class)->recharge($customer, $plan, $plan->routers, 'QR Payment', 'manual');
+        app(RechargeService::class)->recharge($customer, $plan, 'QR Payment', 'manual');
         $order = Order::factory()->create(['customer_id' => $customer->id, 'plan_id' => $plan->id, 'status' => 'pending']);
 
         $this->expectException(ActivePlanStillActiveException::class);

@@ -44,7 +44,7 @@ function logout() {
                 </ul>
             </div>
 
-            <div class="bg-white rounded shadow p-4">
+            <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
                 <h2 class="font-semibold mb-2">Riwayat Transaksi</h2>
                 <ul class="space-y-2">
                     <li v-for="tx in transactions" :key="tx.id" class="text-sm border-b pb-2">
@@ -58,3 +58,4 @@ function logout() {
         </div>
     </div>
 </template>
+

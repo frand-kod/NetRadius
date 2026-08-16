@@ -98,6 +98,10 @@ Kerjakan **berurutan** karena ada dependensi:
 11. `10-customer-portal.md` — Customer login/dashboard/forgot-password
 12. `11-public-pages.md` — Invoice publik, voucher print, welcome
 13. `99-cleanup.md` — Remove Filament, final verification
+14. `12-styling-system.md` — Kamus desain & recipe kelas (BACA DULU)
+15. `13-styling-pages.md` — Terapkan styling ke semua halaman (find-replace + checklist)
+16. `14-dashboard.md` — Dashboard modern: KPI + chart SVG (customer, pendapatan, user online, voucher)
+17. `15-settings-pages.md` — Tampilan halaman Settings (General/Payment/Notification) + link sidebar
 
 ## Konvensi Kode
 

@@ -21,7 +21,7 @@ class VoucherGenerationTest extends TestCase
 
         $this->assertCount(20, $vouchers);
         $this->assertSame(20, $vouchers->pluck('code')->unique()->count());
-        $this->assertTrue($vouchers->every(fn (Voucher $v) => $v->routers === 'radius' && $v->status === '0' && $v->id_plan === $plan->id));
+        $this->assertTrue($vouchers->every(fn (Voucher $v) => $v->status === '0' && $v->id_plan === $plan->id));
         $this->assertDatabaseCount('tbl_voucher', 20);
     }
 

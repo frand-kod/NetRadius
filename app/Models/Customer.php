@@ -20,25 +20,9 @@ class Customer extends Authenticatable
     protected $fillable = [
         'username',
         'password',
-        'photo',
-        'pppoe_username',
-        'pppoe_password',
-        'pppoe_ip',
         'fullname',
-        'address',
-        'city',
-        'district',
-        'state',
-        'zip',
         'phonenumber',
-        'email',
-        'coordinates',
-        'account_type',
-        'balance',
-        'service_type',
-        'auto_renewal',
         'status',
-        'created_by',
         'last_login',
     ];
 
@@ -58,8 +42,6 @@ class Customer extends Authenticatable
             // password (same as the legacy system) to compare/challenge
             // against. Portal login (task #5) must compare plain strings,
             // not Hash::check().
-            'balance' => 'decimal:2',
-            'auto_renewal' => 'boolean',
             'created_at' => 'datetime',
             'last_login' => 'datetime',
         ];
