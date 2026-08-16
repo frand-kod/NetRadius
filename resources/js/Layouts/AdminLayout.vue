@@ -65,6 +65,7 @@ const navSections = [
             { label: 'Pengaturan Umum', href: '/admin/settings/general', icon: 'settings' },
             { label: 'Payment Settings', href: '/admin/settings/payment', icon: 'payment' },
             { label: 'Notification Settings', href: '/admin/settings/notification', icon: 'notification' },
+            { label: 'Profil Saya', href: '/admin/profile', icon: 'customers' },
         ],
     },
 ];

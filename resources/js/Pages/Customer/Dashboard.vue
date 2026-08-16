@@ -22,8 +22,11 @@ function logout() {
                     <h1 class="text-xl font-bold">Halo, {{ customer.fullname }}</h1>
                     <p class="text-sm text-gray-500">Status: {{ customer.status }}</p>
                 </div>
-                <button @click="logout" :disabled="logoutForm.processing"
-                        class="text-red-600 hover:underline text-sm">Logout</button>
+                <div class="flex items-center gap-4">
+                    <a href="/customer/profile" class="text-blue-600 hover:underline text-sm">Profil</a>
+                    <button @click="logout" :disabled="logoutForm.processing"
+                            class="text-red-600 hover:underline text-sm">Logout</button>
+                </div>
             </div>
 
             <div class="bg-white rounded shadow p-4 mb-4">

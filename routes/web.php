@@ -13,10 +13,12 @@ use App\Http\Controllers\Admin\NotificationSettingsController as AdminNotificati
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PaymentSettingsController as AdminPaymentSettingsController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\VoucherController as AdminVoucherController;
 use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\ForgotPasswordController as CustomerForgotPasswordController;
+use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\VoucherPrintController;
 use Illuminate\Support\Facades\Route;
@@ -106,6 +108,11 @@ Route::middleware('auth:web')->prefix('admin/plans')->name('admin.plans.')->grou
     Route::delete('/{plan}', [AdminPlanController::class, 'destroy'])->name('destroy');
 });
 
+Route::middleware('auth:web')->prefix('admin/profile')->name('admin.profile.')->group(function () {
+    Route::get('/', [AdminProfileController::class, 'edit'])->name('edit');
+    Route::post('/', [AdminProfileController::class, 'update'])->name('update');
+});
+
 Route::middleware('auth:web')->prefix('admin/bandwidths')->name('admin.bandwidths.')->group(function () {
     Route::get('/', [AdminBandwidthController::class, 'index'])->name('index');
     Route::get('/create', [AdminBandwidthController::class, 'create'])->name('create');
@@ -137,5 +144,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
     Route::middleware('auth:customer')->group(function () {
         Route::post('/logout', [CustomerAuthController::class, 'logout'])->name('logout');
         Route::get('/dashboard', [CustomerDashboardController::class, 'show'])->name('dashboard');
+        Route::get('/profile', [CustomerProfileController::class, 'edit'])->name('profile.edit');
+        Route::post('/profile', [CustomerProfileController::class, 'update'])->name('profile.update');
     });
 });
