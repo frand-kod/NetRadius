@@ -13,19 +13,19 @@ defineProps({
     <AdminLayout>
         <template #title>Dokumentasi</template>
 
-        <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 transition-colors">
+        <div class="rounded-lg border border-neutral-200 bg-white transition-colors dark:border-neutral-700 dark:bg-neutral-900">
             <!-- Doc switcher -->
-            <div class="flex flex-wrap gap-2 border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+            <div class="flex flex-wrap gap-2 border-b border-neutral-200 px-6 py-4 dark:border-neutral-700">
                 <Link v-for="d in docs" :key="d.key" :href="`/admin/help/${d.key}`"
-                      class="rounded-lg px-4 py-2 text-sm font-medium transition"
+                      class="rounded-md px-4 py-2 text-sm font-medium tracking-tight transition"
                       :class="d.active
-                          ? 'bg-amber-600 text-white shadow-sm'
-                          : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'">
+                          ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                          : 'border border-neutral-200 bg-white text-neutral-500 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700'">
                     {{ d.title }}
                 </Link>
             </div>
 
-            <div class="markdown-body mx-auto max-w-3xl px-6 py-8">
+            <div class="markdown-body mx-auto max-w-4xl px-6 py-10">
                 <!-- eslint-disable-next-line vue/no-v-html -->
                 <div v-html="content" />
             </div>
@@ -34,42 +34,46 @@ defineProps({
 </template>
 
 <style>
-/* Markdown content styling. Rendered server-side via Str::markdown() and injected
-   as raw HTML (v-html), so these selectors target the generated elements directly.
-   Dark mode follows the app's class-based .dark toggle, not the OS media query. */
+/* Editorial warm-monochrome markdown styling (minimalist-ui directive).
+   Rendered server-side via Str::markdown() and injected as raw HTML (v-html),
+   so these selectors target the generated elements directly. Dark mode follows
+   the app's class-based .dark toggle, not the OS media query. */
 .markdown-body {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     line-height: 1.7;
-    color: rgb(55 65 81);
+    color: #2f3437;
 }
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3,
 .markdown-body h4,
 .markdown-body strong {
-    color: rgb(17 24 39);
+    color: #111111;
+    letter-spacing: -0.02em;
 }
 .markdown-body h1 {
-    font-size: 1.875rem;
+    font-size: 1.75rem;
     font-weight: 700;
+    line-height: 1.15;
     margin-bottom: 1rem;
 }
 .markdown-body h2 {
     font-size: 1.25rem;
     font-weight: 700;
-    margin-top: 2rem;
+    line-height: 1.2;
+    margin-top: 2.25rem;
     margin-bottom: 0.5rem;
     padding-bottom: 0.375rem;
-    border-bottom: 1px solid rgb(229 231 235);
+    border-bottom: 1px solid #eaeaea;
 }
 .markdown-body h3 {
-    font-size: 1.05rem;
+    font-size: 1.0625rem;
     font-weight: 600;
-    margin-top: 1.5rem;
+    margin-top: 1.75rem;
     margin-bottom: 0.375rem;
 }
 .markdown-body h4 {
-    font-size: 0.95rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     margin-top: 1.25rem;
     margin-bottom: 0.375rem;
@@ -92,20 +96,24 @@ defineProps({
     margin-top: 0.25rem;
 }
 .markdown-body a {
-    color: rgb(217 119 6);
+    color: #111111;
     text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.markdown-body a:hover {
+    opacity: 0.7;
 }
 .markdown-body code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
     font-size: 0.8125rem;
-    background: rgb(243 244 246);
-    color: rgb(180 83 9);
+    background: #fbf3db;
+    color: #956400;
     padding: 0.125rem 0.375rem;
     border-radius: 0.25rem;
 }
 .markdown-body pre {
-    background: rgb(17 24 39);
-    color: rgb(243 244 246);
+    background: #111111;
+    color: #f7f6f3;
     padding: 0.875rem 1rem;
     border-radius: 0.5rem;
     overflow-x: auto;
@@ -119,17 +127,26 @@ defineProps({
     padding: 0;
 }
 .markdown-body blockquote {
-    border-left: 4px solid rgb(251 191 36);
-    background: rgb(255 251 235);
-    color: rgb(120 53 15);
+    border-left: 4px solid #111111;
+    background: #f7f6f3;
+    color: #2f3437;
     padding: 0.625rem 1rem;
     border-radius: 0 0.375rem 0.375rem 0;
     margin: 0.75rem 0;
     font-size: 0.875rem;
 }
+.markdown-body kbd {
+    font-family: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+    font-size: 0.75rem;
+    border: 1px solid #eaeaea;
+    border-radius: 0.25rem;
+    background: #f7f6f3;
+    padding: 0.125rem 0.375rem;
+    color: #2f3437;
+}
 .markdown-body hr {
-    border-color: rgb(229 231 235);
-    margin: 1.5rem 0;
+    border-color: #eaeaea;
+    margin: 1.75rem 0;
 }
 .markdown-body table {
     display: block;
@@ -139,28 +156,28 @@ defineProps({
     border-collapse: collapse;
     margin: 0.75rem 0;
     font-size: 0.8125rem;
-    border: 1px solid rgb(229 231 235);
-    border-radius: 0.5rem;
+    border: 1px solid #eaeaea;
+    border-radius: 0.375rem;
 }
 .markdown-body th,
 .markdown-body td {
     padding: 0.5rem 0.75rem;
-    border: 1px solid rgb(229 231 235);
+    border: 1px solid #eaeaea;
     text-align: left;
     vertical-align: top;
 }
 .markdown-body th {
-    background: rgb(249 250 251);
+    background: #f7f6f3;
     font-weight: 600;
-    color: rgb(17 24 39);
+    color: #111111;
 }
 .markdown-body td {
-    color: rgb(55 65 81);
+    color: #2f3437;
 }
 
 /* Dark mode (class-based, driven by useTheme .dark on <html>) */
 .dark .markdown-body {
-    color: rgb(209 213 219);
+    color: #d6d3d1;
 }
 .dark .markdown-body h1,
 .dark .markdown-body h2,
@@ -168,28 +185,40 @@ defineProps({
 .dark .markdown-body h4,
 .dark .markdown-body strong,
 .dark .markdown-body th {
-    color: rgb(243 244 246);
+    color: #fafaf9;
 }
 .dark .markdown-body h2,
 .dark .markdown-body hr,
 .dark .markdown-body table,
 .dark .markdown-body th,
 .dark .markdown-body td {
-    border-color: rgb(55 65 81);
+    border-color: #292524;
+}
+.dark .markdown-body a {
+    color: #fafaf9;
 }
 .dark .markdown-body code {
-    background: rgb(55 65 81);
-    color: rgb(251 191 36);
+    background: #292524;
+    color: #e7c66b;
+}
+.dark .markdown-body pre {
+    background: #0c0a09;
+    color: #e7e5e4;
 }
 .dark .markdown-body blockquote {
-    background: rgb(69 26 3);
-    color: rgb(254 215 170);
-    border-color: rgb(217 119 6);
+    background: #1c1917;
+    border-color: #fafaf9;
+    color: #d6d3d1;
+}
+.dark .markdown-body kbd {
+    background: #1c1917;
+    border-color: #292524;
+    color: #d6d3d1;
 }
 .dark .markdown-body th {
-    background: rgb(31 41 55);
+    background: #1c1917;
 }
 .dark .markdown-body td {
-    color: rgb(209 213 219);
+    color: #d6d3d1;
 }
 </style>
