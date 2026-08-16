@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
 
         // Default app settings (idempotent).
         $defaults = [
-            'company_name' => 'PHPNuxBill',
+            'company_name' => 'NetRadius',
             'currency_symbol' => 'Rp',
             'currency_code' => 'IDR',
             'country_code_phone' => '62',

@@ -1,8 +1,8 @@
-# PHPNuxBill — Theme System & Dark/Light Mode
+# NetRadius — Theme System & Dark/Light Mode
 
 ## 1. Objective
 
-PHPNuxBill MUST support three appearance modes:
+NetRadius MUST support three appearance modes:
 
 ```text
 Light
@@ -71,7 +71,7 @@ localStorage
 Contoh key:
 
 ```text
-phpnuxbill-theme
+netradius-theme
 ```
 
 Value:
@@ -896,7 +896,7 @@ Example:
 ```text
 Appearance
 
-Choose how PHPNuxBill looks.
+Choose how NetRadius looks.
 
 Theme
 
@@ -1013,7 +1013,7 @@ Do not sacrifice navigation space just to expose all three options permanently.
 
 # 28. Theme-aware Logo
 
-PHPNuxBill branding should remain readable in both themes.
+NetRadius branding should remain readable in both themes.
 
 If existing logo is dark-only:
 
@@ -1185,7 +1185,7 @@ The application should feel coherent in:
 LIGHT
 
 ┌──────────────────────────────────────────┐
-│ PHPNuxBill                  Search Admin  │
+│ NetRadius                  Search Admin  │
 ├────────────┬─────────────────────────────┤
 │ Dashboard  │ KPI     KPI     KPI     KPI │
 │ Customers  │                             │
@@ -1201,7 +1201,7 @@ and:
 DARK
 
 ┌──────────────────────────────────────────┐
-│ PHPNuxBill                  Search Admin  │
+│ NetRadius                  Search Admin  │
 ├────────────┬─────────────────────────────┤
 │ Dashboard  │ KPI     KPI     KPI     KPI │
 │ Customers  │                             │

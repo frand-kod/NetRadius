@@ -1,6 +1,6 @@
 # Panduan Penggunaan Aplikasi
 
-Selamat datang di **PHPNuxBill** — aplikasi billing hotspot untuk Mikrotik.
+Selamat datang di **NetRadius** — aplikasi billing hotspot untuk Mikrotik.
 Panduan ini menjelaskan cara menggunakan setiap bagian aplikasi, baik sebagai **Admin** maupun sebagai **Customer**.
 
 ---

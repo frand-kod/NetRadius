@@ -85,7 +85,7 @@ MD;
             'status' => $statusLabel,
             'created_at' => $order->created_at?->format('d M Y H:i') ?? '-',
             'paid_at' => $order->paid_at?->format('d M Y H:i') ?? '-',
-            'company_name' => AppConfig::get('company_name', 'PHPNuxBill'),
+            'company_name' => AppConfig::get('company_name', 'NetRadius'),
             'company_address' => AppConfig::get('company_address'),
             'company_phone' => AppConfig::get('company_phone'),
             'company_email' => AppConfig::get('company_email'),

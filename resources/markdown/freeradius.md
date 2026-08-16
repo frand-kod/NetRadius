@@ -1,7 +1,7 @@
 # Integrasi FreeRADIUS REST
 
 Dokumen ini adalah **satu-satunya panduan** untuk menghubungkan **FreeRADIUS** ke aplikasi ini
-(Laravel NuxBill) melalui **FreeRADIUS REST API**. Dengan metode ini, FreeRADIUS berbicara ke
+(Laravel NetRadius) melalui **FreeRADIUS REST API**. Dengan metode ini, FreeRADIUS berbicara ke
 aplikasi melalui **HTTPS POST**, sehingga konfigurasi lebih sederhana dan **tidak memerlukan
 IP Publik** untuk MikroTik — cukup aplikasi yang dapat dijangkau FreeRADIUS.
 

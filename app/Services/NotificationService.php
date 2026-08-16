@@ -106,7 +106,7 @@ class NotificationService
         try {
             $response = Http::post("https://api.telegram.org/bot{$token}/sendMessage", [
                 'chat_id' => $chatId,
-                'text' => 'Uji koneksi NuxBill: notifikasi Telegram berfungsi.',
+                'text' => 'Uji koneksi NetRadius: notifikasi Telegram berfungsi.',
             ]);
 
             if ($response->successful() && $response->json('ok')) {
@@ -138,7 +138,7 @@ class NotificationService
                 ->withHeaders(['X-Device-Id' => $deviceId])
                 ->post(rtrim($serverUrl, '/').'/send/message', [
                     'phone' => $jid,
-                    'message' => 'Uji koneksi NuxBill: notifikasi WhatsApp berfungsi.',
+                    'message' => 'Uji koneksi NetRadius: notifikasi WhatsApp berfungsi.',
                 ]);
 
             if ($response->successful() && $response->json('code') === 'SUCCESS') {

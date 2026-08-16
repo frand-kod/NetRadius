@@ -40,8 +40,12 @@ class HandleInertiaRequests extends Middleware
                 'user' => fn () => $request->user('web')?->only('id', 'username', 'fullname'),
                 'customer' => fn () => $request->user('customer')?->only('id', 'username', 'fullname'),
             ],
+            'app' => [
+                'name' => config('app.name', 'NetRadius'),
+                'version' => config('app.version', '1.0.0'),
+            ],
             'settings' => [
-                'company_name' => fn () => AppConfig::get('company_name', config('app.name', 'PHPNuxBill')),
+                'company_name' => fn () => AppConfig::get('company_name', config('app.name', 'NetRadius')),
                 'currency_symbol' => fn () => AppConfig::get('currency_symbol', 'Rp'),
             ],
         ]);

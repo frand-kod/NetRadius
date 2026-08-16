@@ -1,7 +1,7 @@
-# NuxBill: Billing Hotspot Mikrotik
+# NetRadius: Billing Hotspot Mikrotik
 
-## Tentang NuxBill
-NuxBill adalah solusi billing hotspot Mikrotik yang ditulis ulang ke Laravel 13, dirancang khusus untuk penggunaan pribadi (ISP rumahan/perumahan kecil, single admin).
+## Tentang NetRadius
+NetRadius adalah solusi billing hotspot Mikrotik yang ditulis ulang ke Laravel 13, dirancang khusus untuk penggunaan pribadi (ISP rumahan/perumahan kecil, single admin).
 
 ## Target Audiens
 - Pemilik ISP rumahan atau perumahan kecil.

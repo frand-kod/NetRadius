@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { Notivue, Notification, darkTheme, lightTheme, push } from 'notivue';
 import { computed, ref, watch } from 'vue';
 import Icon from '@/Components/Icon.vue';
+import NetRadiusLogo from '@/Components/NetRadiusLogo.vue';
 import ThemeToggler from '@/Components/ThemeToggler.vue';
 import { useTheme } from '@/Composables/useTheme.js';
 
@@ -82,8 +83,7 @@ const isItemActive = (item) => (item.exact ? page.url === item.href : page.url.s
         <aside class="fixed inset-y-0 left-0 z-30 w-64 shrink-0 flex-col border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-transform lg:static lg:translate-x-0"
                :class="isOpen ? 'translate-x-0' : '-translate-x-full'">
             <div class="flex h-16 items-center gap-2 border-b border-gray-200 dark:border-gray-700 px-5">
-                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-600 text-sm font-bold text-white">N</span>
-                <span class="text-lg font-bold text-gray-900 dark:text-white">NuxBill</span>
+                <NetRadiusLogo size="h-8 w-8" />
                 <button @click="isOpen = false" aria-label="Tutup menu"
                         class="ml-auto block rounded p-1 text-gray-500 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:text-gray-400 dark:hover:text-white lg:hidden">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

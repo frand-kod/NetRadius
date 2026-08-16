@@ -22,7 +22,7 @@ const notivue = createNotivue({
 });
 
 createInertiaApp({
-    title: (title) => title ? `${title} - PHPNuxBill` : 'PHPNuxBill',
+    title: (title) => title ? `${title} - NetRadius` : 'NetRadius',
     resolve: (name) => resolvePageComponent(
         `./Pages/${name}.vue`,
         import.meta.glob('./Pages/**/*.vue')

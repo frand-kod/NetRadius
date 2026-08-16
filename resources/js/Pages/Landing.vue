@@ -3,11 +3,8 @@
     <!-- Navigation -->
     <nav class="h-20 border-b border-slate-100 sticky top-0 bg-white/80 backdrop-blur-md z-50 dark:border-slate-800 dark:bg-slate-950/80">
       <div class="max-w-7xl mx-auto px-8 h-full flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-slate-900 rounded flex items-center justify-center dark:bg-slate-800">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-          </div>
-          <span class="text-xl font-bold tracking-tight uppercase">NuxBill</span>
+        <div class="flex items-center">
+          <NetRadiusLogo size="h-10 w-10" />
         </div>
         <div class="hidden md:flex items-center gap-8">
           <a href="#features" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors dark:text-slate-400 dark:hover:text-white">Fitur</a>
@@ -122,16 +119,37 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 border-t border-slate-100">
-      <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
-        <div class="flex items-center gap-3 grayscale opacity-50">
-          <div class="w-6 h-6 bg-slate-900 rounded flex items-center justify-center">
-            <span class="text-[10px] text-white font-bold">N</span>
+    <footer class="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+      <div class="max-w-7xl mx-auto px-8 py-16">
+        <div class="grid gap-12 md:grid-cols-4">
+          <div class="md:col-span-2">
+            <NetRadiusLogo />
+            <p class="mt-4 max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+              Solusi billing &amp; manajemen hotspot untuk MikroTik dan FreeRADIUS. Dirancang untuk ISP rumahan dan single admin.
+            </p>
           </div>
-          <span class="text-xs font-bold tracking-widest uppercase">NuxBill</span>
+          <div>
+            <h4 class="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Produk</h4>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#features" class="text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Fitur</a></li>
+              <li><a href="#use-cases" class="text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Penggunaan</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Akses</h4>
+            <ul class="space-y-2 text-sm">
+              <li><a href="/customer/login" class="text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Portal Pelanggan</a></li>
+              <li><a href="/admin/login" class="text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">Admin Login</a></li>
+            </ul>
+          </div>
         </div>
-        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
-          &copy; {{ new Date().getFullYear() }} Personal Project &bull; Laravel 13 &bull; SQLite
+        <div class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 dark:border-slate-800 md:flex-row">
+          <p class="text-xs text-slate-400 dark:text-slate-500">
+            &copy; {{ new Date().getFullYear() }} {{ app?.name }}. All rights reserved.
+          </p>
+          <p class="text-xs text-slate-400 dark:text-slate-500">
+            {{ app?.name }} v{{ app?.version }} &bull; Laravel &bull; MikroTik &bull; FreeRADIUS
+          </p>
         </div>
       </div>
     </footer>
@@ -139,7 +157,11 @@
 </template>
 
 <script setup>
+import { usePage } from '@inertiajs/vue3';
+import NetRadiusLogo from '@/Components/NetRadiusLogo.vue';
 import ThemeToggler from '@/Components/ThemeToggler.vue';
+
+const app = usePage().props.app;
 
 const features = [
   {

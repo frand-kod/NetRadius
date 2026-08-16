@@ -28,7 +28,7 @@ mengirim pesan ke GOWA via **HTTP REST** dengan **Basic Auth** dan header **`X-D
 lalu GOWA meneruskan ke nomor tujuan memakai akun WhatsApp yang sudah terhubung.
 
 ```
-Laravel (NuxBill) ──HTTPS POST──▶ GOWA server ──WhatsApp──▶ Pelanggan
+Laravel (NetRadius) ──HTTPS POST──▶ GOWA server ──WhatsApp──▶ Pelanggan
   NotificationService              /send/message            (akun WA terhubung)
   (Basic Auth + X-Device-Id)
 ```

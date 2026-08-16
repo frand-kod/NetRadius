@@ -1,6 +1,8 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
+import NetRadiusLogo from '@/Components/NetRadiusLogo.vue';
 
+const app = usePage().props.app;
 const form = useForm({
     username: '',
     password: '',
@@ -12,15 +14,12 @@ function submit() {
 </script>
 
 <template>
-    <div class="flex min-h-screen items-center justify-center bg-gray-950 p-4">
+    <div class="flex min-h-screen flex-col items-center justify-center bg-gray-950 p-4">
         <div class="w-full max-w-sm">
-            <!-- Header -->
-            <div class="mb-10 text-center">
-                <div class="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-lg border border-amber-600/20 bg-amber-600/10">
-                    <span class="text-xl font-bold text-amber-500">N</span>
-                </div>
-                <h1 class="text-xl font-semibold tracking-wide text-white">NuxBill</h1>
-                <p class="mt-2 text-xs uppercase tracking-widest text-gray-500">Panel Admin</p>
+            <!-- Header / Brand -->
+            <div class="mb-10 flex flex-col items-center text-center">
+                <NetRadiusLogo class="mb-6" size="h-12 w-12" />
+                <p class="text-xs uppercase tracking-widest text-gray-500">Panel Admin</p>
             </div>
 
             <!-- Login Card -->
@@ -49,13 +48,20 @@ function submit() {
                 </form>
             </div>
 
-            <!-- Footer -->
+            <!-- Forgot -->
             <div class="mt-8 text-center">
                 <a href="/admin-forgot-password"
                    class="text-[10px] uppercase tracking-widest text-gray-600 transition hover:text-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500">
                     Lupa Password?
                 </a>
             </div>
+
+            <!-- Footer -->
+            <footer class="mt-8 border-t border-gray-800 pt-6 text-center text-xs text-gray-500">
+                <p class="font-semibold text-gray-400">{{ app?.name }} v{{ app?.version }}</p>
+                <p class="mt-1">Manajemen billing &amp; hotspot untuk MikroTik + FreeRADIUS</p>
+                <p class="mt-1">&copy; {{ new Date().getFullYear() }} {{ app?.name }}. All rights reserved.</p>
+            </footer>
         </div>
     </div>
 </template>
