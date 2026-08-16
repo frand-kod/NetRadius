@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Transaction;
+use App\Models\UserRecharge;
 use App\Models\Voucher;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -31,55 +34,7 @@ class DashboardController extends Controller
         $unusedVouchers = Voucher::where('status', '0')->count();
         $usedVouchers = Voucher::where('status', '!=', '0')->count();
 
-        // --- Sesi RADIUS aktif & statistik penggunaan dari rad_acct ---
-        $activeUsernames = DB::table('rad_acct as r1')
-            ->where('r1.acctstatustype', 'Start')
-            ->whereNotExists(function ($q) {
-                $q->selectRaw('1')->from('rad_acct as r2')
-                    ->whereColumn('r2.username', 'r1.username')
-                    ->where('r2.acctstatustype', 'Stop');
-            })
-            ->distinct()
-            ->pluck('r1.username');
-
-        $onlineUsers = collect();
-        $totalDown = 0;
-        $totalUp = 0;
-        $totalTime = 0;
-
-        foreach ($activeUsernames as $username) {
-            $row = DB::table('rad_acct')->where('username', $username)->orderByDesc('id')->first();
-            $down = (int) ($row->acctinputoctets ?? 0);
-            $up = (int) ($row->acctoutputoctets ?? 0);
-            $time = (int) ($row->acctsessiontime ?? 0);
-            $totalDown += $down;
-            $totalUp += $up;
-            $totalTime += $time;
-
-            $onlineUsers->push((object) [
-                'username' => $row->username,
-                'framedipaddress' => $row->framedipaddress,
-                'macaddr' => $row->macaddr,
-                'dateAdded' => $row->dateAdded,
-                'down' => $down,
-                'up' => $up,
-                'volume' => $down + $up,
-                'time' => $time,
-            ]);
-        }
-
-        $onlineUsers = $onlineUsers->sortByDesc('volume')->take(10)->values();
-
-        $onlineCount = $activeUsernames->count();
-        $totalVolume = $totalDown + $totalUp;
-        $usage = [
-            'activeSessions' => $onlineCount,
-            'totalDown' => $totalDown,
-            'totalUp' => $totalUp,
-            'totalVolume' => $totalVolume,
-            // Rata-rata kecepatan (bps) seluruh sesi aktif.
-            'avgSpeed' => $totalTime > 0 ? (int) ($totalVolume * 8 / $totalTime) : 0,
-        ];
+        ['onlineUsers' => $onlineUsers, 'usage' => $usage] = $this->usageStats();
 
         // --- Customer baru per bulan (12 bulan terakhir) ---
         $customerTrend = collect(range(0, 11))->map(function (int $i) {
@@ -155,7 +110,7 @@ class DashboardController extends Controller
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'totalCustomers' => Customer::count(),
-                'onlineUsers' => $onlineCount,
+                'onlineUsers' => $usage['activeSessions'],
                 'comparison' => [
                     'customers' => $customerComparison,
                     'usage' => $usageComparison,
@@ -170,6 +125,107 @@ class DashboardController extends Controller
             ],
             'onlineUsers' => $onlineUsers,
             'usage' => $usage,
+            'expiring' => $this->expiringUsers(),
         ]);
+    }
+
+    /**
+     * Data real-time ringan untuk polling dashboard (tanpa memuat ulang seluruh
+     * halaman). Hanya usage, online users, dan daftar akan-expired.
+     *
+     * @return array{usage: array, onlineUsers: Collection, expiring: Collection}
+     */
+    public function realtime(): JsonResponse
+    {
+        ['onlineUsers' => $onlineUsers, 'usage' => $usage] = $this->usageStats();
+
+        return response()->json([
+            'usage' => $usage,
+            'onlineUsers' => $onlineUsers,
+            'expiring' => $this->expiringUsers(),
+        ]);
+    }
+
+    /**
+     * Statistik sesi aktif & pemakaian dari rad_acct. Satu query untuk username
+     * aktif + satu query per sesi (di-loop), dibatasi hanya sesi aktif.
+     *
+     * @return array{onlineUsers: Collection, usage: array}
+     */
+    private function usageStats(): array
+    {
+        $activeUsernames = DB::table('rad_acct as r1')
+            ->where('r1.acctstatustype', 'Start')
+            ->whereNotExists(function ($q) {
+                $q->selectRaw('1')->from('rad_acct as r2')
+                    ->whereColumn('r2.username', 'r1.username')
+                    ->where('r2.acctstatustype', 'Stop');
+            })
+            ->distinct()
+            ->pluck('r1.username');
+
+        $onlineUsers = collect();
+        $totalDown = 0;
+        $totalUp = 0;
+        $totalTime = 0;
+
+        foreach ($activeUsernames as $username) {
+            $row = DB::table('rad_acct')->where('username', $username)->orderByDesc('id')->first();
+            $down = (int) ($row->acctinputoctets ?? 0);
+            $up = (int) ($row->acctoutputoctets ?? 0);
+            $time = (int) ($row->acctsessiontime ?? 0);
+            $totalDown += $down;
+            $totalUp += $up;
+            $totalTime += $time;
+
+            $onlineUsers->push((object) [
+                'username' => $row->username,
+                'framedipaddress' => $row->framedipaddress,
+                'macaddr' => $row->macaddr,
+                'dateAdded' => $row->dateAdded,
+                'down' => $down,
+                'up' => $up,
+                'volume' => $down + $up,
+                'time' => $time,
+            ]);
+        }
+
+        $onlineUsers = $onlineUsers->sortByDesc('volume')->take(10)->values();
+        $onlineCount = $activeUsernames->count();
+        $totalVolume = $totalDown + $totalUp;
+
+        return [
+            'onlineUsers' => $onlineUsers,
+            'usage' => [
+                'activeSessions' => $onlineCount,
+                'totalDown' => $totalDown,
+                'totalUp' => $totalUp,
+                'totalVolume' => $totalVolume,
+                // Rata-rata kecepatan (bps) seluruh sesi aktif.
+                'avgSpeed' => $totalTime > 0 ? (int) ($totalVolume * 8 / $totalTime) : 0,
+            ],
+        ];
+    }
+
+    /**
+     * Paket aktif (UserRecharge) yang masa berlakunya habis dalam 7 hari ke
+     * depan, diurutkan dari yang paling dekat. Menggunakan eager load `plan`.
+     */
+    private function expiringUsers(): Collection
+    {
+        return UserRecharge::with('plan')
+            ->where('status', 'on')
+            ->whereBetween('expiration', [now()->toDateString(), now()->addDays(7)->toDateString()])
+            ->orderBy('expiration')
+            ->orderBy('time')
+            ->take(10)
+            ->get()
+            ->map(fn (UserRecharge $r) => [
+                'username' => $r->username,
+                'plan' => $r->namebp ?: $r->plan?->name_plan,
+                'expires_at' => $r->expiration->toDateString(),
+                'days_left' => now()->startOfDay()->diffInDays(Carbon::parse($r->expiration)),
+            ])
+            ->values();
     }
 }

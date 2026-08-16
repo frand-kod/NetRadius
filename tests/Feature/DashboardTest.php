@@ -1,0 +1,44 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Plan;
+use App\Models\User;
+use App\Models\UserRecharge;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class DashboardTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_realtime_endpoint_returns_usage_payload(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'web')
+            ->getJson('/admin/dashboard/realtime')
+            ->assertOk()
+            ->assertJsonStructure(['usage', 'onlineUsers', 'expiring']);
+    }
+
+    public function test_realtime_lists_packages_expiring_soon(): void
+    {
+        $user = User::factory()->create();
+        $plan = Plan::factory()->create(['name_plan' => 'Paket A']);
+        UserRecharge::factory()->create([
+            'username' => 'cust1',
+            'plan_id' => $plan->id,
+            'namebp' => 'Paket A',
+            'status' => 'on',
+            'expiration' => now()->addDays(2)->toDateString(),
+            'time' => '12:00:00',
+        ]);
+
+        $this->actingAs($user, 'web')
+            ->getJson('/admin/dashboard/realtime')
+            ->assertOk()
+            ->assertJsonPath('expiring.0.username', 'cust1')
+            ->assertJsonPath('expiring.0.days_left', 2);
+    }
+}

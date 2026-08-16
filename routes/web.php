@@ -44,6 +44,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/', [AdminDashboardController::class, 'show'])->name('dashboard');
         Route::get('/dashboard', fn () => redirect()->route('admin.dashboard'));
+        Route::get('/dashboard/realtime', [AdminDashboardController::class, 'realtime'])->name('dashboard.realtime');
     });
 });
 

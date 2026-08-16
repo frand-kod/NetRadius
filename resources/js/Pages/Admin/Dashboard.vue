@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import BarChart from '@/Components/BarChart.vue';
 import LineChart from '@/Components/LineChart.vue';
@@ -13,7 +13,39 @@ const props = defineProps({
     voucherUsage: Array,
     onlineUsers: Array,
     usage: Object,
+    expiring: Array,
 });
+
+// --- Realtime: data yang di-polling ringan dari /dashboard/realtime ---
+const realtime = ref(false);
+let pollTimer = null;
+const usageData = ref(props.usage);
+const onlineData = ref(props.onlineUsers);
+const expiringData = ref(props.expiring);
+
+async function pollRealtime() {
+    try {
+        const res = await fetch('/admin/dashboard/realtime', { headers: { Accept: 'application/json' } });
+        const data = await res.json();
+        if (data.usage) usageData.value = data.usage;
+        if (data.onlineUsers) onlineData.value = data.onlineUsers;
+        if (data.expiring) expiringData.value = data.expiring;
+    } catch {
+        // Abaikan error polling (jaringan/offline) — data tetap yang terakhir.
+    }
+}
+
+watch(realtime, (on) => {
+    if (on) {
+        pollRealtime();
+        pollTimer = setInterval(pollRealtime, 5000);
+    } else if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+    }
+});
+
+onBeforeUnmount(() => pollTimer && clearInterval(pollTimer));
 
 const STATUS_COLORS = {
     Active: '#16a34a',
@@ -64,14 +96,14 @@ function usagePct(label) {
 
 const kpis = computed(() => [
     { label: 'Total Customers', value: props.stats?.totalCustomers, color: 'text-gray-900 dark:text-gray-100', trend: true },
-    { label: 'Online Users', value: props.stats?.onlineUsers, color: 'text-blue-600' },
+    { label: 'Online Users', value: usageData.value?.activeSessions, color: 'text-blue-600' },
 ]);
 
 const usageCards = computed(() => [
-    { label: 'Sesi Aktif', value: props.usage?.activeSessions ?? 0, color: 'text-gray-900 dark:text-gray-100', trend: true },
-    { label: 'Total Download', value: formatBytes(props.usage?.totalDown), color: 'text-blue-600', trend: true },
-    { label: 'Total Upload', value: formatBytes(props.usage?.totalUp), color: 'text-amber-600', trend: true },
-    { label: 'Rata-rata Kecepatan', value: formatSpeed(props.usage?.avgSpeed), color: 'text-green-600' },
+    { label: 'Sesi Aktif', value: usageData.value?.activeSessions ?? 0, color: 'text-gray-900 dark:text-gray-100', trend: true },
+    { label: 'Total Download', value: formatBytes(usageData.value?.totalDown), color: 'text-blue-600', trend: true },
+    { label: 'Total Upload', value: formatBytes(usageData.value?.totalUp), color: 'text-amber-600', trend: true },
+    { label: 'Rata-rata Kecepatan', value: formatSpeed(usageData.value?.avgSpeed), color: 'text-green-600' },
 ]);
 
 function formatBytes(bytes) {
@@ -97,6 +129,17 @@ function userSpeed(u) {
 <template>
     <AdminLayout>
         <template #title>Dashboard</template>
+
+        <!-- Realtime toggle -->
+        <div class="mb-4 flex items-center justify-end gap-2">
+            <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Realtime (5 detik)</span>
+            <button type="button" @click="realtime = !realtime" role="switch" :aria-checked="realtime"
+                    :aria-label="realtime ? 'Matikan realtime' : 'Aktifkan realtime'"
+                    class="relative h-5 w-9 rounded-full transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
+                    :class="realtime ? 'bg-amber-600' : 'bg-gray-300 dark:bg-gray-600'">
+                <span class="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all" :class="realtime ? 'left-4' : 'left-0.5'"></span>
+            </button>
+        </div>
 
         <!-- KPI Cards -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -138,6 +181,28 @@ function userSpeed(u) {
                     <span class="text-gray-400">vs {{ usageInterval }} mnt lalu</span>
                 </p>
             </div>
+        </div>
+
+        <!-- Akan Expired -->
+        <div class="mt-6 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 transition-colors">
+            <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Akan Expired (7 Hari)</h3>
+            </div>
+            <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+                <li v-for="e in expiringData" :key="e.username + e.expires_at" class="flex items-center justify-between gap-3 px-4 py-3">
+                    <div class="min-w-0">
+                        <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{{ e.username }}</p>
+                        <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ e.plan }} · {{ e.expires_at }}</p>
+                    </div>
+                    <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                          :class="e.days_left <= 1 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'">
+                        {{ e.days_left === 0 ? 'Hari ini' : e.days_left + ' hari' }}
+                    </span>
+                </li>
+                <li v-if="expiringData.length === 0" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                    Tidak ada paket yang akan habis dalam 7 hari.
+                </li>
+            </ul>
         </div>
 
         <!-- Bar: Customer baru / bulan  +  Donut: Status customer -->
@@ -186,7 +251,7 @@ function userSpeed(u) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="u in onlineUsers" :key="u.username + u.dateAdded"
+                        <tr v-for="u in onlineData" :key="u.username + u.dateAdded"
                             class="border-b border-gray-100 dark:border-gray-700 transition hover:bg-amber-50/40 dark:hover:bg-gray-700/50"
                             :class="{ 'border-b-0': u === onlineUsers[onlineUsers.length - 1] }">
                             <td class="px-4 py-3 align-top font-mono text-gray-700 dark:text-gray-300">{{ u.username }}</td>
@@ -198,7 +263,7 @@ function userSpeed(u) {
                             <td class="px-4 py-3 align-top text-right text-gray-700 dark:text-gray-300">{{ u.time }}</td>
                             <td class="px-4 py-3 align-top text-xs text-gray-700 dark:text-gray-300">{{ u.dateAdded }}</td>
                         </tr>
-                        <tr v-if="onlineUsers.length === 0">
+                        <tr v-if="onlineData.length === 0">
                             <td colspan="8" class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                                 Tidak ada sesi online terpantau.
                             </td>
