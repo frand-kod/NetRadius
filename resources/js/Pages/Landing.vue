@@ -122,15 +122,15 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 border-t border-slate-100 dark:border-slate-800">
+    <footer class="py-12 border-t border-slate-100">
       <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
         <div class="flex items-center gap-3 grayscale opacity-50">
-          <div class="w-6 h-6 bg-slate-900 rounded flex items-center justify-center dark:bg-slate-800">
+          <div class="w-6 h-6 bg-slate-900 rounded flex items-center justify-center">
             <span class="text-[10px] text-white font-bold">N</span>
           </div>
           <span class="text-xs font-bold tracking-widest uppercase">NuxBill</span>
         </div>
-        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-widest dark:text-slate-500">
+        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-widest">
           &copy; {{ new Date().getFullYear() }} Personal Project &bull; Laravel 13 &bull; SQLite
         </div>
       </div>
