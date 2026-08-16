@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/github/license/frand-kod/NetRadius)](https://github.com/frand-kod/NetRadius/blob/master/LICENSE) [![PHP](https://img.shields.io/badge/PHP-%5E8.3-%23777BB4)](https://www.php.net/) [![Laravel](https://img.shields.io/badge/Laravel-13.x-red)](https://laravel.com/) [![Stars](https://img.shields.io/github/stars/frand-kod/NetRadius?style=social)](https://github.com/frand-kod/NetRadius/stargazers)
+
 # Fitur NetRadius
 
 ## Tentang NetRadius
