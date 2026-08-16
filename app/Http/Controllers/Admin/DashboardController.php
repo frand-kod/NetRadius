@@ -6,12 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\Voucher;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
+    /**
+     * Persentase perubahan (current vs previous). Mengembalikan null bila
+     * `previous` nol/negatif (tidak bisa dijadikan pembanding) — bukan 0/error.
+     */
+    private function change(int $current, int $previous): ?int
+    {
+        if ($previous <= 0) {
+            return null;
+        }
+
+        return (int) round((($current - $previous) / $previous) * 100);
+    }
+
     public function show(): Response
     {
         $unusedVouchers = Voucher::where('status', '0')->count();
@@ -97,10 +111,55 @@ class DashboardController extends Controller
             ->filter(fn (array $s) => $s['value'] > 0)
             ->values();
 
+        // --- Perbandingan: customer (hari/minggu/bulan ini vs periode sebelumnya) ---
+        $now = now();
+        $customerIntervals = [
+            'today' => ['label' => 'Hari Ini', 'start' => $now->copy()->startOfDay(), 'prevStart' => $now->copy()->subDay()->startOfDay(), 'prevEnd' => $now->copy()->startOfDay()],
+            'week' => ['label' => 'Minggu Ini', 'start' => $now->copy()->startOfWeek(), 'prevStart' => $now->copy()->subWeek()->startOfWeek(), 'prevEnd' => $now->copy()->startOfWeek()],
+            'month' => ['label' => 'Bulan Ini', 'start' => $now->copy()->startOfMonth(), 'prevStart' => $now->copy()->subMonth()->startOfMonth(), 'prevEnd' => $now->copy()->startOfMonth()],
+        ];
+
+        $customerComparison = collect($customerIntervals)->map(function (array $int) use ($now) {
+            $current = Customer::whereBetween('created_at', [$int['start'], $now])->count();
+            $previous = Customer::whereBetween('created_at', [$int['prevStart'], $int['prevEnd']])->count();
+
+            return [
+                'key' => $int['label'],
+                'pct' => $this->change($current, $previous),
+            ];
+        });
+
+        // --- Perbandingan: aktivitas rad_acct (5/10/15/60 menit lalu vs sebelumnya) ---
+        // Satu query agregat untuk 120 menit terakhir, diagregasi di PHP per interval
+        // sehingga tidak ada N+1.
+        $usageRows = DB::table('rad_acct')
+            ->where('dateAdded', '>=', $now->copy()->subMinutes(120))
+            ->get(['dateAdded', 'acctoutputoctets', 'acctinputoctets']);
+
+        $usageComparison = collect([5, 10, 15, 60])->map(function (int $minutes) use ($usageRows, $now) {
+            $curStart = $now->copy()->subMinutes($minutes);
+            $prevStart = $now->copy()->subMinutes($minutes * 2);
+
+            $cur = $usageRows->filter(fn ($r) => Carbon::parse($r->dateAdded) >= $curStart);
+            $prev = $usageRows->filter(fn ($r) => Carbon::parse($r->dateAdded) >= $prevStart && Carbon::parse($r->dateAdded) < $curStart);
+
+            return [
+                'key' => $minutes,
+                'label' => $minutes.' menit',
+                'sessions' => $this->change($cur->count(), $prev->count()),
+                'down' => $this->change((int) $cur->sum('acctoutputoctets'), (int) $prev->sum('acctoutputoctets')),
+                'up' => $this->change((int) $cur->sum('acctinputoctets'), (int) $prev->sum('acctinputoctets')),
+            ];
+        })->values();
+
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'totalCustomers' => Customer::count(),
                 'onlineUsers' => $onlineCount,
+                'comparison' => [
+                    'customers' => $customerComparison,
+                    'usage' => $usageComparison,
+                ],
             ],
             'customerTrend' => $customerTrend,
             'incomeTrend' => $incomeTrend,
