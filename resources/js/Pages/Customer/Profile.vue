@@ -1,5 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
+import Icon from '@/Components/Icon.vue';
+import ThemeToggler from '@/Components/ThemeToggler.vue';
 
 const props = defineProps({ profile: Object });
 
@@ -16,60 +18,74 @@ function submit() {
 }
 
 function fieldClass(field) {
-    const base = 'block w-full rounded-lg border bg-white px-3 py-2 text-sm text-gray-900 transition dark:bg-gray-900 dark:text-white focus:ring-1';
+    const base = 'mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm text-gray-900 transition focus:outline-none focus:ring-2 dark:bg-gray-800 dark:text-white';
     return form.errors[field]
-        ? `${base} border-red-400 focus:border-red-500 focus:ring-red-500`
-        : `${base} border-gray-300 dark:border-gray-600 focus:border-amber-500 focus:ring-amber-500`;
+        ? `${base} border-red-400 focus:border-red-500 focus:ring-red-500/25`
+        : `${base} border-gray-300 dark:border-gray-600 focus:border-amber-500 focus:ring-amber-500/25`;
 }
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-100 p-6">
-        <div class="mx-auto max-w-2xl">
-            <div class="mb-4 flex items-center justify-between rounded bg-white p-4 shadow">
-                <h1 class="text-xl font-bold text-gray-900">Profil Saya</h1>
-                <a href="/customer/dashboard" class="text-sm text-blue-600 hover:underline">Kembali ke Dashboard</a>
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
+        <div class="mx-auto max-w-2xl px-4 py-6">
+
+            <!-- Header -->
+            <div class="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">Profil Saya</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Kelola informasi akun dan password Anda.</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <ThemeToggler />
+                    <a href="/customer/dashboard"
+                       class="flex items-center gap-1.5 text-sm font-medium text-blue-600 transition hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                        <Icon name="orders" />
+                        Kembali ke Dashboard
+                    </a>
+                </div>
             </div>
 
             <form @submit.prevent="submit" class="space-y-6">
 
-                <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                    <div class="border-b border-gray-100 p-5">
-                        <h3 class="text-sm font-semibold text-gray-900">Informasi Akun</h3>
-                        <p class="text-xs text-gray-500">Perbarui nama dan nomor telepon Anda.</p>
+                <!-- Account info -->
+                <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <div class="flex items-center gap-2 border-b border-gray-100 px-4 py-3 dark:border-gray-700">
+                        <Icon name="customers" class="text-gray-500 dark:text-gray-400" />
+                        <h2 class="font-semibold text-gray-900 dark:text-white">Informasi Akun</h2>
                     </div>
-                    <div class="space-y-4 p-5">
+                    <div class="space-y-4 p-4">
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Nama Lengkap</label>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Nama Lengkap</label>
                             <input v-model="form.fullname" type="text" :class="fieldClass('fullname')" />
                             <p v-if="form.errors.fullname" class="mt-1 text-xs text-red-600">{{ form.errors.fullname }}</p>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Nomor Telepon</label>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Nomor Telepon</label>
                             <input v-model="form.phonenumber" type="text" :class="fieldClass('phonenumber')" />
                         </div>
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                    <div class="border-b border-gray-100 p-5">
-                        <h3 class="text-sm font-semibold text-gray-900">Ganti Password</h3>
-                        <p class="text-xs text-gray-500">Kosongkan jika tidak ingin mengubah password.</p>
+                <!-- Password -->
+                <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <div class="flex items-center gap-2 border-b border-gray-100 px-4 py-3 dark:border-gray-700">
+                        <Icon name="settings" class="text-gray-500 dark:text-gray-400" />
+                        <h2 class="font-semibold text-gray-900 dark:text-white">Ganti Password</h2>
                     </div>
-                    <div class="space-y-4 p-5">
+                    <div class="space-y-4 p-4">
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Password Saat Ini</label>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Password Saat Ini</label>
                             <input v-model="form.current_password" type="password" :class="fieldClass('current_password')" autocomplete="current-password" />
                             <p v-if="form.errors.current_password" class="mt-1 text-xs text-red-600">{{ form.errors.current_password }}</p>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
-                                <label class="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Password Baru</label>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Password Baru</label>
                                 <input v-model="form.password" type="password" :class="fieldClass('password')" autocomplete="new-password" />
                                 <p v-if="form.errors.password" class="mt-1 text-xs text-red-600">{{ form.errors.password }}</p>
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-1">Konfirmasi Password</label>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-1">Konfirmasi Password</label>
                                 <input v-model="form.password_confirmation" type="password" :class="fieldClass('password_confirmation')" autocomplete="new-password" />
                             </div>
                         </div>
