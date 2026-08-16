@@ -230,11 +230,11 @@ Jika project menggunakan Tailwind, implementasikan melalui theme variables/confi
 
 # 7. Light Theme
 
-Base:
+Base (warm stone):
 
 ```text
 Background:
-#F5F7FA
+#F5F5F4
 
 Surface:
 #FFFFFF
@@ -243,22 +243,22 @@ Surface Elevated:
 #FFFFFF
 
 Surface Subtle:
-#F8FAFC
+#FAFAF9
 
 Foreground:
-#0F172A
+#1C1917
 
 Foreground Secondary:
-#475569
+#57534E
 
 Foreground Muted:
-#94A3B8
+#A8A29E
 
 Border:
-#E2E8F0
+#E7E5E4
 
 Border Subtle:
-#F1F5F9
+#F5F5F4
 ```
 
 Primary:
@@ -316,35 +316,35 @@ Jangan menggunakan pure black:
 
 sebagai primary application background.
 
-Recommended:
+Recommended (warm stone):
 
 ```text
 Background:
-#0B1120
+#0C0A09
 
 Surface:
-#111827
+#1C1917
 
 Surface Elevated:
-#172033
+#292524
 
 Surface Subtle:
-#1E293B
+#292524
 
 Foreground:
-#F8FAFC
+#FAFAF9
 
 Foreground Secondary:
-#CBD5E1
+#D6D3D1
 
 Foreground Muted:
-#94A3B8
+#A8A29E
 
 Border:
-#263244
+#44403C
 
 Border Subtle:
-#1E293B
+#292524
 ```
 
 Primary:
