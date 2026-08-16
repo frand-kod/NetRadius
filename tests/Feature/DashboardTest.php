@@ -31,6 +31,18 @@ class DashboardTest extends TestCase
                 ->has('recentActivities', 1));
     }
 
+    public function test_dashboard_comparison_sent_as_arrays(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'web')
+            ->get('/admin')
+            ->assertInertia(fn ($page) => $page->component('Admin/Dashboard')
+                // Array (bukan object): item pertama diakses lewat indeks numerik.
+                ->where('stats.comparison.customers.0.key', 'Hari Ini')
+                ->where('stats.comparison.usage.0.key', 5));
+    }
+
     public function test_realtime_endpoint_returns_usage_payload(): void
     {
         $user = User::factory()->create();

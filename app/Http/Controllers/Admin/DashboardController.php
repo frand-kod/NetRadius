@@ -96,7 +96,7 @@ class DashboardController extends Controller
                 'key' => $int['label'],
                 'pct' => $this->change($current, $previous),
             ];
-        });
+        })->values();
 
         // --- Perbandingan: aktivitas rad_acct (5/10/15/60 menit lalu vs sebelumnya) ---
         // Satu query agregat untuk 120 menit terakhir, diagregasi di PHP per interval
