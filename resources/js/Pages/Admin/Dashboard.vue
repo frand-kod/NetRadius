@@ -14,6 +14,7 @@ const props = defineProps({
     onlineUsers: Array,
     usage: Object,
     expiring: Array,
+    topPlans: Array,
 });
 
 // --- Realtime: data yang di-polling ringan dari /dashboard/realtime ---
@@ -183,26 +184,46 @@ function userSpeed(u) {
             </div>
         </div>
 
-        <!-- Akan Expired -->
-        <div class="mt-6 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 transition-colors">
-            <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-3">
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Akan Expired (7 Hari)</h3>
+        <!-- Akan Expired + Top Terlaris -->
+        <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 transition-colors">
+                <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Akan Expired (7 Hari)</h3>
+                </div>
+                <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+                    <li v-for="e in expiringData" :key="e.username + e.expires_at" class="flex items-center justify-between gap-3 px-4 py-3">
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{{ e.username }}</p>
+                            <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ e.plan }} · {{ e.expires_at }}</p>
+                        </div>
+                        <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                              :class="e.days_left <= 1 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'">
+                            {{ e.days_left === 0 ? 'Hari ini' : e.days_left + ' hari' }}
+                        </span>
+                    </li>
+                    <li v-if="expiringData.length === 0" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                        Tidak ada paket yang akan habis dalam 7 hari.
+                    </li>
+                </ul>
             </div>
-            <ul class="divide-y divide-gray-100 dark:divide-gray-700">
-                <li v-for="e in expiringData" :key="e.username + e.expires_at" class="flex items-center justify-between gap-3 px-4 py-3">
-                    <div class="min-w-0">
-                        <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100">{{ e.username }}</p>
-                        <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ e.plan }} · {{ e.expires_at }}</p>
-                    </div>
-                    <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium"
-                          :class="e.days_left <= 1 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'">
-                        {{ e.days_left === 0 ? 'Hari ini' : e.days_left + ' hari' }}
-                    </span>
-                </li>
-                <li v-if="expiringData.length === 0" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                    Tidak ada paket yang akan habis dalam 7 hari.
-                </li>
-            </ul>
+
+            <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 transition-colors">
+                <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Top Paket Terlaris (30 Hari)</h3>
+                </div>
+                <ol class="divide-y divide-gray-100 dark:divide-gray-700">
+                    <li v-for="(p, i) in topPlans" :key="p.name" class="flex items-center gap-3 px-4 py-3">
+                        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-700">
+                            {{ i + 1 }}
+                        </span>
+                        <p class="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 dark:text-gray-100">{{ p.name }}</p>
+                        <span class="shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400">{{ p.count }} terjual</span>
+                    </li>
+                    <li v-if="topPlans.length === 0" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                        Belum ada penjualan dalam 30 hari terakhir.
+                    </li>
+                </ol>
+            </div>
         </div>
 
         <!-- Bar: Customer baru / bulan  +  Donut: Status customer -->

@@ -107,6 +107,17 @@ class DashboardController extends Controller
             ];
         })->values();
 
+        // --- Top paket terlaris (30 hari terakhir) ---
+        $topPlans = Transaction::select('plan_name')
+            ->whereDate('recharged_on', '>=', now()->subDays(30)->toDateString())
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('plan_name')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get()
+            ->map(fn ($t) => ['name' => $t->plan_name, 'count' => (int) $t->total])
+            ->values();
+
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'totalCustomers' => Customer::count(),
@@ -119,6 +130,7 @@ class DashboardController extends Controller
             'customerTrend' => $customerTrend,
             'incomeTrend' => $incomeTrend,
             'customerStatus' => $customerStatus,
+            'topPlans' => $topPlans,
             'voucherUsage' => [
                 ['label' => 'Belum Dipakai', 'value' => $unusedVouchers, 'color' => '#f59e0b'],
                 ['label' => 'Terpakai', 'value' => $usedVouchers, 'color' => '#16a34a'],
