@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Customer;
 use App\Models\Plan;
 use App\Models\User;
 use App\Models\UserRecharge;
@@ -11,6 +12,24 @@ use Tests\TestCase;
 class DashboardTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_dashboard_page_loads(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'web')->get('/admin')->assertOk();
+    }
+
+    public function test_dashboard_includes_recent_activity(): void
+    {
+        $user = User::factory()->create();
+        Customer::factory()->create(['created_at' => now()]);
+
+        $this->actingAs($user, 'web')
+            ->get('/admin')
+            ->assertInertia(fn ($page) => $page->component('Admin/Dashboard')
+                ->has('recentActivities', 1));
+    }
 
     public function test_realtime_endpoint_returns_usage_payload(): void
     {

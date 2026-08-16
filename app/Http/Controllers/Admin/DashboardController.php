@@ -118,6 +118,21 @@ class DashboardController extends Controller
             ->map(fn ($t) => ['name' => $t->plan_name, 'count' => (int) $t->total])
             ->values();
 
+        // --- Aktivitas terbaru: gabungan customer baru, voucher dipakai, pembayaran ---
+        // 3 query agregat kecil (masing-masing take 10), digabung & disort di PHP.
+        $recentActivities = collect()
+            ->merge(Customer::latest('created_at')->take(10)->get(['username', 'created_at'])
+                ->map(fn ($c) => ['type' => 'customer', 'text' => "Customer baru: {$c->username}", 'ts' => Carbon::parse($c->created_at)->timestamp]))
+            ->merge(Voucher::whereNotNull('used_date')->latest('used_date')->take(10)->get(['code', 'used_date'])
+                ->map(fn ($v) => ['type' => 'voucher', 'text' => "Voucher dipakai: {$v->code}", 'ts' => Carbon::parse($v->used_date)->timestamp]))
+            ->merge(Transaction::latest('recharged_on')->take(10)->get(['plan_name', 'recharged_on'])
+                ->map(fn ($t) => ['type' => 'payment', 'text' => "Pembayaran: {$t->plan_name}", 'ts' => Carbon::parse($t->recharged_on)->timestamp]))
+            ->filter(fn (array $a) => $a['ts'] !== null)
+            ->sortByDesc('ts')
+            ->take(5)
+            ->values()
+            ->map(fn (array $a) => ['type' => $a['type'], 'text' => $a['text'], 'at' => Carbon::createFromTimestamp($a['ts'])->diffForHumans()]);
+
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'totalCustomers' => Customer::count(),
@@ -138,6 +153,7 @@ class DashboardController extends Controller
             'onlineUsers' => $onlineUsers,
             'usage' => $usage,
             'expiring' => $this->expiringUsers(),
+            'recentActivities' => $recentActivities,
         ]);
     }
 

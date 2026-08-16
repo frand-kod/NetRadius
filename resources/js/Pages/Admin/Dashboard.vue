@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import Icon from '@/Components/Icon.vue';
 import BarChart from '@/Components/BarChart.vue';
 import LineChart from '@/Components/LineChart.vue';
 import DonutChart from '@/Components/DonutChart.vue';
@@ -15,6 +16,7 @@ const props = defineProps({
     usage: Object,
     expiring: Array,
     topPlans: Array,
+    recentActivities: Array,
 });
 
 // --- Realtime: data yang di-polling ringan dari /dashboard/realtime ---
@@ -224,6 +226,25 @@ function userSpeed(u) {
                     </li>
                 </ol>
             </div>
+        </div>
+
+        <!-- Aktivitas Terbaru -->
+        <div class="mt-6 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 transition-colors">
+            <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Aktivitas Terbaru</h3>
+            </div>
+            <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+                <li v-for="(a, i) in recentActivities" :key="i" class="flex items-center gap-3 px-4 py-3">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 text-slate-500 dark:bg-gray-700 dark:text-gray-300">
+                        <Icon :name="a.type === 'payment' ? 'payment' : a.type === 'voucher' ? 'vouchers' : 'customers'" />
+                    </span>
+                    <p class="min-w-0 flex-1 truncate text-sm text-gray-900 dark:text-gray-100">{{ a.text }}</p>
+                    <span class="shrink-0 text-xs text-gray-400 dark:text-gray-500">{{ a.at }}</span>
+                </li>
+                <li v-if="recentActivities.length === 0" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                    Belum ada aktivitas.
+                </li>
+            </ul>
         </div>
 
         <!-- Bar: Customer baru / bulan  +  Donut: Status customer -->
